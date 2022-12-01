@@ -5,20 +5,17 @@ module Lib
 import           Data.List       (sort)
 import           Data.List.Split (splitOn)
 
--- Parsing and processing for day1
+-- Parsing for day1
 parseInventory :: String -> [Int]
 parseInventory = map read . lines
 
 parseInventories :: String -> [[Int]]
 parseInventories = map parseInventory . splitOn "\n\n"
 
-sortedSums :: [[Int]] -> [Int]
-sortedSums = reverse . sort . map sum
-
 -- Day 1 solutions
 day1General :: Int -> String -> Int
 day1General nElves = do
-  sum . take nElves . sortedSums . parseInventories
+  sum . take nElves . reverse . sort . map sum . parseInventories
 
 day1'1 :: String -> Int
 day1'1 = day1General 1
