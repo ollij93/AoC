@@ -14,9 +14,9 @@ main = do
     foldl
       (\s v ->
          s ++
-         (if isEmpty s
-            then ""
-            else "\n") ++
+         (case s of
+            [] -> ""
+            _  -> "\n") ++
          runSolution content v)
       ""
       solutions
