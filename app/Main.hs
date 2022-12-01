@@ -2,21 +2,8 @@ module Main
   ( main
   ) where
 
-import           Lib
-
-runSolution :: String -> (String, String -> Int) -> String
-runSolution input (name, fnc) = name ++ ": " ++ show (fnc input)
+import           Lib (Solution (dataPath), process, solutions)
+import           Lib2021 (solutions2021)
 
 main :: IO ()
-main = do
-  content <- getContents
-  putStrLn $
-    foldl
-      (\s v ->
-         s ++
-         (case s of
-            [] -> ""
-            _  -> "\n") ++
-         runSolution content v)
-      ""
-      solutions
+main = process dataPath $ solutions2021 ++ solutions

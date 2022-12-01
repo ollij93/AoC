@@ -1,5 +1,7 @@
 module Lib
-  ( solutions
+  ( Solution(..)
+  , process
+  , solutions
   ) where
 
 import           Data.List       (sort)
@@ -24,5 +26,40 @@ day1'2 :: String -> Int
 day1'2 = day1General 3
 
 -- Solution registry
-solutions :: [(String, String -> Int)]
-solutions = [("Day 1.1", day1'1), ("Day 1.2", day1'2)]
+data Solution =
+  Solution
+    { name     :: String
+    , testPath :: String
+    , dataPath :: String
+    , fnc      :: String -> Int
+    }
+
+solutions :: [Solution]
+solutions =
+  [ Solution
+      { name = "Day 1.1"
+      , testPath = "inputs/tests/day1.txt"
+      , dataPath = "inputs/day1.txt"
+      , fnc = day1'1
+      }
+  , Solution
+      { name = "Day 1.2"
+      , testPath = "inputs/tests/day1.txt"
+      , dataPath = "inputs/day1.txt"
+      , fnc = day1'2
+      }
+  ]
+
+-- Run functions
+runSolution :: Solution -> String -> String
+runSolution Solution {name = sName, fnc = sFnc} input =
+  sName ++ ": " ++ show (sFnc input) ++ "\n"
+
+readAndRun :: (Solution -> FilePath) -> Solution -> IO String
+readAndRun pathSelector soln =
+  fmap (runSolution soln) $ readFile $ pathSelector soln
+
+process :: (Solution -> FilePath) -> [Solution] -> IO ()
+process pathSelector solns = do
+  result <- concat <$> mapM (readAndRun pathSelector) solns
+  putStrLn result

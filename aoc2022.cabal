@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Lib2021
   other-modules:
       Paths_aoc2022
   hs-source-dirs:

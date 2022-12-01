@@ -1,2 +1,5 @@
+import           Lib     (Solution (testPath), process, solutions)
+import           Lib2021 (solutions2021, groups)
+
 main :: IO ()
-main = putStrLn "Test suite not yet implemented"
+main = process testPath $ solutions2021 ++ solutions
