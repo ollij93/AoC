@@ -4,6 +4,7 @@ module Lib
   , solutions
   ) where
 
+import Data.Char (ord)
 import           Data.List       (sort)
 import           Data.List.Split (splitOn)
 
@@ -112,8 +113,30 @@ roundScore (a, b) = do
 day2'1 :: String -> Int
 day2'1 = sum . map (roundScore . parseRound'1) . lines
 
+asciiDiff :: Char -> Char -> Int
+asciiDiff a b =
+  (ord a) - (ord b)
+
+day2'1ascii :: String -> Int
+day2'1ascii =
+  sum . map (\s -> do
+    let opp = (asciiDiff (s !! 0) 'A')
+    let slf = (asciiDiff (s !! 2) 'X')
+    let rslt = (1 + slf - opp) `mod` 3
+    (rslt * 3) + slf + 1
+      ) . lines
+
 day2'2 :: String -> Int
 day2'2 = sum . map (roundScore . parseRound'2) . lines
+
+day2'2ascii :: String -> Int
+day2'2ascii =
+  sum . map (\s -> do
+    let opp = (asciiDiff (s !! 0) 'A')
+    let rslt = (asciiDiff (s !! 2) 'X')
+    let slf = (rslt + opp - 1) `mod` 3
+    (rslt * 3) + slf + 1
+  ) . lines
 
 -- Solution registry
 data Solution =
@@ -150,6 +173,18 @@ solutions =
       , dataPath = "inputs/day2.txt"
       , fnc = day2'2
       }
+  , Solution
+      { name = "Day 2.1 (ascii)"
+      , testPath = "inputs/tests/day2.txt"
+      , dataPath = "inputs/day2.txt"
+      , fnc = day2'1ascii
+      }
+   , Solution
+       { name = "Day 2.2 (ascii)"
+       , testPath = "inputs/tests/day2.txt"
+       , dataPath = "inputs/day2.txt"
+       , fnc = day2'2ascii
+       }
   ]
 
 -- Run functions
