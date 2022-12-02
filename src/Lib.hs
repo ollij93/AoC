@@ -25,6 +25,96 @@ day1'1 = day1General 1
 day1'2 :: String -> Int
 day1'2 = day1General 3
 
+-- Parsing for day2
+data RPC
+  = Rock
+  | Paper
+  | Scissors
+
+parseRPC :: String -> RPC
+parseRPC s =
+  case s of
+    "A" -> Rock
+    "B" -> Paper
+    "X" -> Rock
+    "Y" -> Paper
+    _   -> Scissors
+
+data Result
+  = Win
+  | Lose
+  | Draw
+
+parseResult :: String -> Result
+parseResult s =
+  case s of
+    "X" -> Lose
+    "Y" -> Draw
+    _   -> Win
+
+parseRound'1 :: String -> (RPC, RPC)
+parseRound'1 s = do
+  let parts = map parseRPC . words $ s
+  (head parts, last parts)
+
+parseRound'2 :: String -> (RPC, RPC)
+parseRound'2 s = do
+  let opp = parseRPC . head . words $ s
+  let res = parseResult . last . words $ s
+  let slf =
+        (case res of
+           Win ->
+             (case opp of
+                Rock     -> Paper
+                Paper    -> Scissors
+                Scissors -> Rock)
+           Draw -> opp
+           Lose ->
+             (case opp of
+                Rock     -> Scissors
+                Paper    -> Rock
+                Scissors -> Paper))
+  (opp, slf)
+
+-- Day 2 solutions
+roundResult :: (RPC, RPC) -> Result
+roundResult (a, b) =
+  case a of
+    Rock ->
+      (case b of
+         Rock     -> Draw
+         Paper    -> Win
+         Scissors -> Lose)
+    Paper ->
+      (case b of
+         Rock     -> Lose
+         Paper    -> Draw
+         Scissors -> Win)
+    Scissors ->
+      (case b of
+         Rock     -> Win
+         Paper    -> Lose
+         Scissors -> Draw)
+
+roundScore :: (RPC, RPC) -> Int
+roundScore (a, b) = do
+  let selfScore =
+        (case b of
+           Rock     -> 1
+           Paper    -> 2
+           Scissors -> 3)
+  selfScore +
+    (case roundResult (a, b) of
+       Win  -> 6
+       Lose -> 0
+       Draw -> 3)
+
+day2'1 :: String -> Int
+day2'1 = sum . map (roundScore . parseRound'1) . lines
+
+day2'2 :: String -> Int
+day2'2 = sum . map (roundScore . parseRound'2) . lines
+
 -- Solution registry
 data Solution =
   Solution
@@ -47,6 +137,18 @@ solutions =
       , testPath = "inputs/tests/day1.txt"
       , dataPath = "inputs/day1.txt"
       , fnc = day1'2
+      }
+  , Solution
+      { name = "Day 2.1"
+      , testPath = "inputs/tests/day2.txt"
+      , dataPath = "inputs/day2.txt"
+      , fnc = day2'1
+      }
+  , Solution
+      { name = "Day 2.2"
+      , testPath = "inputs/tests/day2.txt"
+      , dataPath = "inputs/day2.txt"
+      , fnc = day2'2
       }
   ]
 
