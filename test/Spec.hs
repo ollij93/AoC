@@ -1,5 +1,6 @@
-import           Lib     (Solution (testPath), process, solutions)
-import           Lib2021 (solutions2021)
+import           AoC     (Solution (testPath), process)
+import qualified AoC2021 (solutions)
+import qualified AoC2022 (solutions)
 
 main :: IO ()
-main = process testPath $ solutions2021 ++ solutions
+main = process testPath $ AoC2021.solutions ++ AoC2022.solutions
