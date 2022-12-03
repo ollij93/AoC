@@ -2,8 +2,9 @@ module Main
   ( main
   ) where
 
-import           Lib (Solution (dataPath), process, solutions)
-import           Lib2021 (solutions2021)
+import           AoC     (Solution (dataPath), process)
+import qualified AoC2021
+import qualified AoC2022
 
 main :: IO ()
-main = process dataPath $ solutions2021 ++ solutions
+main = process dataPath $ AoC2021.solutions ++ AoC2022.solutions

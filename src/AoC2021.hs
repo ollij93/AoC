@@ -1,9 +1,8 @@
-module Lib2021
-  ( solutions2021
-  , groups
+module AoC2021
+  ( solutions
   ) where
 
-import           Lib       (Solution (..))
+import           AoC       (Solution (..))
 
 import           Data.List (singleton)
 
@@ -159,8 +158,8 @@ day24'1 =
   parseALUInstructions
 
 -- Solution registry
-solutions2021 :: [Solution]
-solutions2021 =
+solutions :: [Solution]
+solutions =
   [ Solution
       { name = "2021-Day1.1"
       , testPath = "inputs/2021/tests/day1.txt"
