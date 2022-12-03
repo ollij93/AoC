@@ -195,49 +195,49 @@ data Solution =
 solutions :: [Solution]
 solutions =
   [ Solution
-      { name = "Day 1.1"
+      { name = "Day1.1"
       , testPath = "inputs/tests/day1.txt"
       , dataPath = "inputs/day1.txt"
       , fnc = day1'1
       }
   , Solution
-      { name = "Day 1.2"
+      { name = "Day1.2"
       , testPath = "inputs/tests/day1.txt"
       , dataPath = "inputs/day1.txt"
       , fnc = day1'2
       }
   , Solution
-      { name = "Day 2.1"
+      { name = "Day2.1"
       , testPath = "inputs/tests/day2.txt"
       , dataPath = "inputs/day2.txt"
       , fnc = day2'1
       }
   , Solution
-      { name = "Day 2.2"
+      { name = "Day2.2"
       , testPath = "inputs/tests/day2.txt"
       , dataPath = "inputs/day2.txt"
       , fnc = day2'2
       }
   , Solution
-      { name = "Day 2.1 (ascii)"
+      { name = "Day2.1 (ascii)"
       , testPath = "inputs/tests/day2.txt"
       , dataPath = "inputs/day2.txt"
       , fnc = day2'1ascii
       }
   , Solution
-      { name = "Day 2.2 (ascii)"
+      { name = "Day2.2 (ascii)"
       , testPath = "inputs/tests/day2.txt"
       , dataPath = "inputs/day2.txt"
       , fnc = day2'2ascii
       }
   , Solution
-      { name = "Day 3.1"
+      { name = "Day3.1"
       , testPath = "inputs/tests/day3.txt"
       , dataPath = "inputs/day3.txt"
       , fnc = day3'1
       }
   , Solution
-      { name = "Day 3.2"
+      { name = "Day3.2"
       , testPath = "inputs/tests/day3.txt"
       , dataPath = "inputs/day3.txt"
       , fnc = day3'2
