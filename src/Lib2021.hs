@@ -83,25 +83,25 @@ day2'2 = day2General processInstruction'2
 solutions2021 :: [Solution]
 solutions2021 =
   [ Solution
-      { name = "2021 Day 1.1"
+      { name = "2021-Day1.1"
       , testPath = "inputs/2021/tests/day1.txt"
       , dataPath = "inputs/2021/day1.txt"
       , fnc = day1'1
       }
   , Solution
-      { name = "2021 Day 1.2"
+      { name = "2021-Day1.2"
       , testPath = "inputs/2021/tests/day1.txt"
       , dataPath = "inputs/2021/day1.txt"
       , fnc = day1'2
       }
   , Solution
-      { name = "2021 Day 2.1"
+      { name = "2021-Day2.1"
       , testPath = "inputs/2021/tests/day2.txt"
       , dataPath = "inputs/2021/day2.txt"
       , fnc = day2'1
       }
   , Solution
-      { name = "2021 Day 2.2"
+      { name = "2021-Day2.2"
       , testPath = "inputs/2021/tests/day2.txt"
       , dataPath = "inputs/2021/day2.txt"
       , fnc = day2'2
