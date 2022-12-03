@@ -4,7 +4,9 @@ module Lib
   , solutions
   ) where
 
-import Data.Char (ord)
+import           Data.Bits       (bit, countTrailingZeros, (.&.), (.|.))
+import           Data.Char       (ord)
+import           Data.Int        (Int64)
 import           Data.List       (sort)
 import           Data.List.Split (splitOn)
 
@@ -114,29 +116,72 @@ day2'1 :: String -> Int
 day2'1 = sum . map (roundScore . parseRound'1) . lines
 
 asciiDiff :: Char -> Char -> Int
-asciiDiff a b =
-  (ord a) - (ord b)
+asciiDiff a b = (ord a) - (ord b)
 
 day2'1ascii :: String -> Int
 day2'1ascii =
-  sum . map (\s -> do
-    let opp = (asciiDiff (s !! 0) 'A')
-    let slf = (asciiDiff (s !! 2) 'X')
-    let rslt = (1 + slf - opp) `mod` 3
-    (rslt * 3) + slf + 1
-      ) . lines
+  sum .
+  map
+    (\s -> do
+       let opp = (asciiDiff (s !! 0) 'A')
+       let slf = (asciiDiff (s !! 2) 'X')
+       let rslt = (1 + slf - opp) `mod` 3
+       (rslt * 3) + slf + 1) .
+  lines
 
 day2'2 :: String -> Int
 day2'2 = sum . map (roundScore . parseRound'2) . lines
 
 day2'2ascii :: String -> Int
 day2'2ascii =
-  sum . map (\s -> do
-    let opp = (asciiDiff (s !! 0) 'A')
-    let rslt = (asciiDiff (s !! 2) 'X')
-    let slf = (rslt + opp - 1) `mod` 3
-    (rslt * 3) + slf + 1
-  ) . lines
+  sum .
+  map
+    (\s -> do
+       let opp = (asciiDiff (s !! 0) 'A')
+       let rslt = (asciiDiff (s !! 2) 'X')
+       let slf = (rslt + opp - 1) `mod` 3
+       (rslt * 3) + slf + 1) .
+  lines
+
+-- Day 3
+parseItem :: Char -> Int64
+parseItem c = do
+  let x = ord c
+  bit $
+    x -
+    (if x >= (ord 'a')
+       then (ord 'a')
+       else (ord 'A') - 26)
+
+parsePocket :: String -> Int64
+parsePocket = foldl (\i c -> i .|. (parseItem c)) 0
+
+parseBackpack :: String -> (Int64, Int64)
+parseBackpack s = do
+  let a = take (length s `div` 2) s
+  let b = drop (length s `div` 2) s
+  (parsePocket a, parsePocket b)
+
+priority :: Int64 -> Int
+priority = ((+) 1) . countTrailingZeros
+
+processBackpack :: (Int64, Int64) -> Int
+processBackpack (a, b) = priority $ a .&. b
+
+day3'1 :: String -> Int
+day3'1 = sum . map (processBackpack . parseBackpack) . lines
+
+segments :: Int -> [a] -> [[a]]
+segments n l =
+  case l of
+    [] -> []
+    _  -> (take n l) : segments n (drop n l)
+
+processGroupBackpacks :: [Int64] -> Int
+processGroupBackpacks g = priority $ (head g) .&. (head (tail g)) .&. (last g)
+
+day3'2 :: String -> Int
+day3'2 = sum . map processGroupBackpacks . segments 3 . map parsePocket . lines
 
 -- Solution registry
 data Solution =
@@ -179,12 +224,24 @@ solutions =
       , dataPath = "inputs/day2.txt"
       , fnc = day2'1ascii
       }
-   , Solution
-       { name = "Day 2.2 (ascii)"
-       , testPath = "inputs/tests/day2.txt"
-       , dataPath = "inputs/day2.txt"
-       , fnc = day2'2ascii
-       }
+  , Solution
+      { name = "Day 2.2 (ascii)"
+      , testPath = "inputs/tests/day2.txt"
+      , dataPath = "inputs/day2.txt"
+      , fnc = day2'2ascii
+      }
+  , Solution
+      { name = "Day 3.1"
+      , testPath = "inputs/tests/day3.txt"
+      , dataPath = "inputs/day3.txt"
+      , fnc = day3'1
+      }
+  , Solution
+      { name = "Day 3.2"
+      , testPath = "inputs/tests/day3.txt"
+      , dataPath = "inputs/day3.txt"
+      , fnc = day3'2
+      }
   ]
 
 -- Run functions
