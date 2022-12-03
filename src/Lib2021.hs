@@ -39,9 +39,9 @@ data Direction
 parseDirection :: String -> Direction
 parseDirection s =
   case s of
-    "up"      -> Up
-    "down"    -> Down
-    _ -> Forward
+    "up"   -> Up
+    "down" -> Down
+    _      -> Forward
 
 parseInstruction :: String -> (Direction, Int)
 parseInstruction s = do
@@ -79,6 +79,85 @@ processInstruction'2 (x, y, aim) (dir, spd) =
 day2'2 :: String -> Int
 day2'2 = day2General processInstruction'2
 
+-- Day 24
+data ALURegister
+  = W
+  | X
+  | Y
+  | Z
+
+index :: (Int, Int, Int, Int) -> ALURegister -> Int
+index (w, x, y, z) r =
+  case r of
+    W -> w
+    X -> x
+    Y -> y
+    Z -> z
+
+set :: ALURegister -> Int -> (Int, Int, Int, Int) -> (Int, Int, Int, Int)
+set r v (w, x, y, z) =
+  case r of
+    W -> (v, x, y, z)
+    X -> (w, v, y, z)
+    Y -> (w, x, v, z)
+    Z -> (w, x, y, v)
+
+parseALURegister :: Char -> ALURegister
+parseALURegister c =
+  case c of
+    'w' -> W
+    'x' -> X
+    'y' -> Y
+    _   -> Z
+
+data ALUInstruction
+  = Inp ALURegister
+  | Add ALURegister ALURegister
+  | Mul ALURegister ALURegister
+  | Div ALURegister ALURegister
+  | Mod ALURegister ALURegister
+  | Eql ALURegister ALURegister
+
+parseALUInstruction :: String -> ALUInstruction
+parseALUInstruction s =
+  case take 3 s of
+    "inp" -> Inp (parseALURegister $ s !! 4)
+    "add" -> Add (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
+    "mul" -> Mul (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
+    "div" -> Div (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
+    "mod" -> Mod (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
+    _     -> Eql (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
+
+parseALUInstructions :: String -> [ALUInstruction]
+parseALUInstructions = map parseALUInstruction . lines
+
+processALUInstruction ::
+     ([Int], (Int, Int, Int, Int))
+  -> ALUInstruction
+  -> ([Int], (Int, Int, Int, Int))
+processALUInstruction (inp, reg) inst =
+  case inst of
+    Inp a -> (tail inp, set a (head inp) reg)
+    Add a b -> (inp, set a ((reg `index` a) + (reg `index` b)) reg)
+    Mul a b -> (inp, set a ((reg `index` a) * (reg `index` b)) reg)
+    Div a b -> (inp, set a ((reg `index` a) `div` (reg `index` b)) reg)
+    Mod a b -> (inp, set a ((reg `index` a) `mod` (reg `index` b)) reg)
+    Eql a b ->
+      ( inp
+      , set
+          a
+          (if (reg `index` a) == (reg `index` b)
+             then 1
+             else 0)
+          reg)
+
+day24'1 :: String -> Int
+day24'1 =
+  (\reg -> reg `index` Z) .
+  snd .
+  foldl processALUInstruction ([9 | _ <- [1 .. 9]], (0, 0, 0, 0)) .
+  parseALUInstructions
+
 -- Solution registry
 solutions2021 :: [Solution]
 solutions2021 =
@@ -105,5 +184,11 @@ solutions2021 =
       , testPath = "inputs/2021/tests/day2.txt"
       , dataPath = "inputs/2021/day2.txt"
       , fnc = day2'2
+      }
+  , Solution
+      { name = "2021 Day 24.1"
+      , testPath = "inputs/2021/day24.txt"
+      , dataPath = "inputs/2021/day24.txt"
+      , fnc = day24'1
       }
   ]
