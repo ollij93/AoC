@@ -2,9 +2,10 @@ module AoC2021
   ( solutions
   ) where
 
-import           AoC       (Solution (..))
+import           AoC             (Solution (..))
 
-import           Data.List (singleton)
+import           Data.List       (singleton)
+import           Data.List.Split (splitOn)
 
 -- Parsing for day1
 parseNumList :: String -> [Int]
@@ -79,13 +80,17 @@ day2'2 :: String -> Int
 day2'2 = day2General processInstruction'2
 
 -- Day 24
-data ALURegister
+data ALUReg
   = W
   | X
   | Y
   | Z
 
-index :: (Int, Int, Int, Int) -> ALURegister -> Int
+data ALURegOrInt
+  = Reg ALUReg
+  | N Int
+
+index :: (Int, Int, Int, Int) -> ALUReg -> Int
 index (w, x, y, z) r =
   case r of
     W -> w
@@ -93,7 +98,13 @@ index (w, x, y, z) r =
     Y -> y
     Z -> z
 
-set :: ALURegister -> Int -> (Int, Int, Int, Int) -> (Int, Int, Int, Int)
+value :: (Int, Int, Int, Int) -> ALURegOrInt -> Int
+value reg r =
+  case r of
+    Reg r' -> index reg r'
+    N v    -> v
+
+set :: ALUReg -> Int -> (Int, Int, Int, Int) -> (Int, Int, Int, Int)
 set r v (w, x, y, z) =
   case r of
     W -> (v, x, y, z)
@@ -101,34 +112,48 @@ set r v (w, x, y, z) =
     Y -> (w, x, v, z)
     Z -> (w, x, y, v)
 
-parseALURegister :: Char -> ALURegister
-parseALURegister c =
+parseALUReg :: String -> Maybe ALUReg
+parseALUReg c =
   case c of
-    'w' -> W
-    'x' -> X
-    'y' -> Y
-    _   -> Z
+    "w" -> Just W
+    "x" -> Just X
+    "y" -> Just Y
+    "z" -> Just Z
+    _   -> Nothing
+
+parseALURegOrInt :: String -> ALURegOrInt
+parseALURegOrInt s =
+  case parseALUReg s of
+    Nothing -> N $ read s
+    Just x  -> Reg x
 
 data ALUInstruction
-  = Inp ALURegister
-  | Add ALURegister ALURegister
-  | Mul ALURegister ALURegister
-  | Div ALURegister ALURegister
-  | Mod ALURegister ALURegister
-  | Eql ALURegister ALURegister
+  = Inp ALUReg
+  | Add ALUReg ALURegOrInt
+  | Mul ALUReg ALURegOrInt
+  | Div ALUReg ALURegOrInt
+  | Mod ALUReg ALURegOrInt
+  | Eql ALUReg ALURegOrInt
 
-parseALUInstruction :: String -> ALUInstruction
-parseALUInstruction s =
-  case take 3 s of
-    "inp" -> Inp (parseALURegister $ s !! 4)
-    "add" -> Add (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
-    "mul" -> Mul (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
-    "div" -> Div (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
-    "mod" -> Mod (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
-    _     -> Eql (parseALURegister $ s !! 4) (parseALURegister $ s !! 6)
+parseALUInstruction :: String -> Maybe ALUInstruction
+parseALUInstruction s = do
+  let inst = head $ splitOn " " s
+  let a = parseALUReg . head . tail $ splitOn " " s
+  let b = parseALURegOrInt . last $ splitOn " " s
+  fmap
+    (\a' ->
+       case inst of
+         "inp" -> Inp (a')
+         "add" -> Add (a') (b)
+         "mul" -> Mul (a') (b)
+         "div" -> Div (a') (b)
+         "mod" -> Mod (a') (b)
+         _     -> Eql (a') (b))
+    a
 
 parseALUInstructions :: String -> [ALUInstruction]
-parseALUInstructions = map parseALUInstruction . lines
+parseALUInstructions =
+  (\l -> [x | Just x <- l]) . map parseALUInstruction . lines
 
 processALUInstruction ::
      ([Int], (Int, Int, Int, Int))
@@ -137,15 +162,15 @@ processALUInstruction ::
 processALUInstruction (inp, reg) inst =
   case inst of
     Inp a -> (tail inp, set a (head inp) reg)
-    Add a b -> (inp, set a ((reg `index` a) + (reg `index` b)) reg)
-    Mul a b -> (inp, set a ((reg `index` a) * (reg `index` b)) reg)
-    Div a b -> (inp, set a ((reg `index` a) `div` (reg `index` b)) reg)
-    Mod a b -> (inp, set a ((reg `index` a) `mod` (reg `index` b)) reg)
+    Add a b -> (inp, set a ((reg `index` a) + (reg `value` b)) reg)
+    Mul a b -> (inp, set a ((reg `index` a) * (reg `value` b)) reg)
+    Div a b -> (inp, set a ((reg `index` a) `div` (reg `value` b)) reg)
+    Mod a b -> (inp, set a ((reg `index` a) `mod` (reg `value` b)) reg)
     Eql a b ->
       ( inp
       , set
           a
-          (if (reg `index` a) == (reg `index` b)
+          (if (reg `index` a) == (reg `value` b)
              then 1
              else 0)
           reg)
@@ -154,7 +179,7 @@ day24'1 :: String -> Int
 day24'1 =
   (\reg -> reg `index` Z) .
   snd .
-  foldl processALUInstruction ([9 | _ <- [1 .. 9]], (0, 0, 0, 0)) .
+  foldl processALUInstruction ([9 | _ <- [1 .. 14]], (0, 0, 0, 0)) .
   parseALUInstructions
 
 -- Solution registry
@@ -186,7 +211,7 @@ solutions =
       }
   , Solution
       { name = "2021 Day 24.1"
-      , testPath = "inputs/2021/day24.txt"
+      , testPath = "inputs/2021/tests/day24_negate.txt"
       , dataPath = "inputs/2021/day24.txt"
       , fnc = day24'1
       }
