@@ -6,6 +6,7 @@ import           AoC             (Solution (..))
 import           AoC2022.Day1    (day1'1, day1'2)
 import           AoC2022.Day2    (day2'1, day2'1ascii, day2'2, day2'2ascii)
 import           AoC2022.Day3    (day3'1, day3'2)
+import           AoC2022.Day4    (day4'1, day4'2)
 
 
 -- Solution registry
@@ -59,4 +60,16 @@ solutions =
       , dataPath = "inputs/2022/day3.txt"
       , fnc = day3'2
       }
+  , Solution
+      { name = "Day4.1"
+      , testPath = "inputs/2022/tests/day4.txt"
+      , dataPath = "inputs/2022/day4.txt"
+      , fnc = day4'1
+      }
+   , Solution
+       { name = "Day4.2"
+       , testPath = "inputs/2022/tests/day4.txt"
+       , dataPath = "inputs/2022/day4.txt"
+       , fnc = day4'2
+       }
   ]
