@@ -5,8 +5,12 @@ import           Criterion.Main              (bench, bgroup, defaultMain, nfIO)
 import           Criterion.Measurement.Types (Benchmark)
 
 solutionBench :: Solution -> Benchmark
-solutionBench Solution {name = sName, dataPath = sPath, fnc = sFnc} =
-  bench sName $ nfIO $ fmap sFnc $ readFile sPath
+solutionBench soln =
+  case soln of
+    ISolution {name = sName, dataPath = sPath, ifnc = iFnc} ->
+      bench sName $ nfIO $ fmap iFnc $ readFile sPath
+    SSolution {name = sName, dataPath = sPath, sfnc = sFnc} ->
+      bench sName $ nfIO $ fmap sFnc $ readFile sPath
 
 benches2021 :: [Benchmark]
 benches2021 = map solutionBench AoC2021.solutions

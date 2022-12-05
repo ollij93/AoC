@@ -6,6 +6,7 @@ module AoC2022.Day3
 import           Data.Bits (bit, countTrailingZeros, (.&.), (.|.))
 import           Data.Char (ord)
 import           Data.Int  (Int64)
+import           Util
 
 -- Split a list into two lists at the halfway point
 bisect :: [a] -> ([a], [a])
@@ -17,10 +18,6 @@ segments n l =
   case l of
     [] -> []
     _  -> (take n l) : segments n (drop n l)
-
--- Map members of a tuple
-mapTuple :: (a -> b) -> (a, a) -> (b, b)
-mapTuple f (x, y) = (f x, f y)
 
 -- Parse functions
 allItems :: Int64
