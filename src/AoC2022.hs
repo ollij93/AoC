@@ -8,6 +8,7 @@ import           AoC2022.Day2 (day2'1, day2'1ascii, day2'2, day2'2ascii)
 import           AoC2022.Day3 (day3'1, day3'2)
 import           AoC2022.Day4 (day4'1, day4'2)
 import           AoC2022.Day5 (day5'1, day5'2)
+import           AoC2022.Day6 (day6'1, day6'2)
 
 -- Solution registry
 solutions :: [Solution]
@@ -83,5 +84,17 @@ solutions =
       , testPath = "inputs/2022/tests/day5.txt"
       , dataPath = "inputs/2022/day5.txt"
       , sfnc = day5'2
+      }
+  , SSolution
+      { name = "Day6.1"
+      , testPath = "inputs/2022/tests/day6.txt"
+      , dataPath = "inputs/2022/day6.txt"
+      , sfnc = day6'1
+      }
+  , SSolution
+      { name = "Day6.2"
+      , testPath = "inputs/2022/tests/day6.txt"
+      , dataPath = "inputs/2022/day6.txt"
+      , sfnc = day6'2
       }
   ]
