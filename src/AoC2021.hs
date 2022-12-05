@@ -6,6 +6,7 @@ import           AoC             (Solution (..))
 
 import           Data.List       (singleton)
 import           Data.List.Split (splitOn)
+import           Debug.Trace     (traceShow)
 
 -- Parsing for day1
 parseNumList :: String -> [Int]
@@ -175,12 +176,31 @@ processALUInstruction (inp, reg) inst =
              else 0)
           reg)
 
+digs :: Integral x => x -> [x]
+digs 0 = []
+digs x = digs (x `div` 10) ++ [x `mod` 10]
+
+fromDigs :: Integral x => [x] -> x
+fromDigs = foldl (\ret val -> ret * 10 + val) 0
+
+inputVals :: [[Int]]
+inputVals =
+  map digs $ filter (not . elem '0' . show) [99999999999999 - n | n <- [0 ..]]
+
+runALU :: [Int] -> [ALUInstruction] -> (Int, Int, Int, Int)
+runALU val = snd . foldl processALUInstruction (val, (0, 0, 0, 0))
+
+findBiggestZZero :: [[Int]] -> [ALUInstruction] -> [Int]
+findBiggestZZero vals insts = do
+  let val = head vals
+  let reg = traceShow (val) (runALU val insts)
+  let ret = traceShow (reg) (reg `index` Z)
+  case ret of
+    0 -> val
+    _ -> findBiggestZZero (tail vals) insts
+
 day24'1 :: String -> Int
-day24'1 =
-  (\reg -> reg `index` Z) .
-  snd .
-  foldl processALUInstruction ([9 | _ <- [1 .. 14]], (0, 0, 0, 0)) .
-  parseALUInstructions
+day24'1 = fromDigs . findBiggestZZero inputVals . parseALUInstructions
 
 -- Solution registry
 solutions :: [Solution]
