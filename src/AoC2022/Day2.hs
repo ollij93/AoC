@@ -95,15 +95,15 @@ day2'1 :: String -> Int
 day2'1 = sum . map (roundScore . parseRound'1) . lines
 
 asciiDiff :: Char -> Char -> Int
-asciiDiff a b = (ord a) - (ord b)
+asciiDiff a b = ord a - ord b
 
 day2'1ascii :: String -> Int
 day2'1ascii =
   sum .
   map
     (\s -> do
-       let opp = (asciiDiff (s !! 0) 'A')
-       let slf = (asciiDiff (s !! 2) 'X')
+       let opp = asciiDiff (head s) 'A'
+       let slf = asciiDiff (s !! 2) 'X'
        let rslt = (1 + slf - opp) `mod` 3
        (rslt * 3) + slf + 1) .
   lines
@@ -116,8 +116,8 @@ day2'2ascii =
   sum .
   map
     (\s -> do
-       let opp = (asciiDiff (s !! 0) 'A')
-       let rslt = (asciiDiff (s !! 2) 'X')
+       let opp = asciiDiff (head s) 'A'
+       let rslt = asciiDiff (s !! 2) 'X'
        let slf = (rslt + opp - 1) `mod` 3
        (rslt * 3) + slf + 1) .
   lines

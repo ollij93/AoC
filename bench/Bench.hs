@@ -8,9 +8,9 @@ solutionBench :: Solution -> Benchmark
 solutionBench soln =
   case soln of
     ISolution {name = sName, dataPath = sPath, ifnc = iFnc} ->
-      bench sName $ nfIO $ fmap iFnc $ readFile sPath
+      bench sName $ nfIO $ iFnc <$> readFile sPath
     SSolution {name = sName, dataPath = sPath, sfnc = sFnc} ->
-      bench sName $ nfIO $ fmap sFnc $ readFile sPath
+      bench sName $ nfIO $ sFnc <$> readFile sPath
 
 benches2021 :: [Benchmark]
 benches2021 = map solutionBench AoC2021.solutions

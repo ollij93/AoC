@@ -8,12 +8,13 @@ import           Util
 
 parseCrateRow :: [[Char]] -> String -> [[Char]]
 parseCrateRow stacks l =
-  map
-    (\(stack, crate) ->
+  zipWith
+    (\stack crate ->
        case crate of
          ' ' -> stack
-         _   -> crate : stack) $
-  zip stacks $ every 4 $ "  " ++ l
+         _   -> crate : stack)
+    stacks $
+  every 4 $ "  " ++ l
 
 parseCrates :: String -> [[Char]]
 parseCrates s = do
@@ -24,7 +25,7 @@ parseCrates s = do
              case c of
                ' ' -> []
                _   -> [c]) $
-        every 4 $ "  " ++ (head ls)
+        every 4 $ "  " ++ head ls
   foldl parseCrateRow baseRow $ tail ls
 
 parseInstruction :: String -> (Int, Int, Int)
@@ -62,14 +63,15 @@ processInstruction moveLimiter stacks (n, frm, to) = do
 processMove :: Int -> Int -> Int -> [[Char]] -> [[Char]]
 processMove moveCount frm to stacks = do
   let movingCrates = take moveCount (stacks !! (frm - 1))
-  map
-    (\(idx, stack) ->
+  zipWith
+    (\idx stack ->
        if idx == frm
          then drop moveCount stack
          else if idx == to
                 then movingCrates ++ stack
-                else stack) $
-    zip [1 ..] stacks
+                else stack)
+    [1 ..]
+    stacks
 
 day5 :: (Int -> Int) -> String -> String
 day5 moveLimiter =

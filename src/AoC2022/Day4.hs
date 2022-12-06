@@ -11,7 +11,7 @@ import           Util
 parseSections :: String -> Int128
 parseSections =
   foldl (.|.) 0 .
-  map ((flip shiftR) 1 . bit) .
+  map (flip shiftR 1 . bit) .
   (\(x, y) -> [x .. y]) . mapTuple read . splitOnce '-'
 
 parsePair :: String -> (Int128, Int128)
