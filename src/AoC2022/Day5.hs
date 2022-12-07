@@ -6,8 +6,8 @@ module AoC2022.Day5
 import           Data.List.Split (splitOn)
 import           Util
 
-parseCrateRow :: [[Char]] -> String -> [[Char]]
-parseCrateRow stacks l =
+parseCrateRow :: String -> [[Char]] -> [[Char]]
+parseCrateRow l stacks =
   zipWith
     (\stack crate ->
        case crate of
@@ -18,15 +18,15 @@ parseCrateRow stacks l =
 
 parseCrates :: String -> [[Char]]
 parseCrates s = do
-  let ls = drop 1 . reverse . lines $ s
+  let ls = init . lines $ s
   let baseRow =
         map
           (\c ->
              case c of
                ' ' -> []
                _   -> [c]) $
-        every 4 $ "  " ++ head ls
-  foldl parseCrateRow baseRow $ tail ls
+        every 4 $ "  " ++ last ls
+  foldr parseCrateRow baseRow $ init ls
 
 parseInstruction :: String -> (Int, Int, Int)
 parseInstruction s = do

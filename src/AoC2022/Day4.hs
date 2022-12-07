@@ -10,7 +10,7 @@ import           Util
 -- Parse functions
 parseSections :: String -> Int128
 parseSections =
-  foldl (.|.) 0 .
+  foldr (.|.) 0 .
   map (flip shiftR 1 . bit) .
   (\(x, y) -> [x .. y]) . mapTuple read . splitOnce '-'
 

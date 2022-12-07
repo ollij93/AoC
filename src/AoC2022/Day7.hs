@@ -21,16 +21,16 @@ parseLS =
   uncurry LS .
   foldl
     (\(ds, fs) l ->
-       case take 3 l of
-         "dir" -> (drop 4 l : ds, fs)
-         _     -> (ds, parseFileLine l : fs))
+       case head l of
+         'd' -> (drop 4 l : ds, fs)
+         _   -> (ds, parseFileLine l : fs))
     ([], [])
 
 parseCmd :: String -> Cmd
 parseCmd s =
-  case take 2 s of
-    "cd" -> CD $ drop 3 s
-    _    -> parseLS . drop 1 . lines $ s
+  case head s of
+    'c' -> CD $ drop 3 s
+    _   -> parseLS . drop 1 . lines $ s
 
 parseCmds :: String -> [Cmd]
 parseCmds = map parseCmd . splitOn "\n$ " . drop 2
@@ -51,7 +51,7 @@ joinPath :: String -> String -> String
 joinPath parent name =
   case parent of
     "/" -> '/' : name
-    _   -> parent ++ "/" ++ name
+    _   -> parent ++ '/' : name
 
 updateFromLS :: String -> [String] -> [(String, Int)] -> FSTree -> FSTree
 updateFromLS cwd dirs files tree =
@@ -59,16 +59,16 @@ updateFromLS cwd dirs files tree =
   foldl (\m (f, s) -> insert (joinPath cwd f) (File s) m) tree files
 
 parentDir :: String -> String
-parentDir = init . concatMap (++ "/") . init . splitOn "/"
+parentDir = tail . concatMap ('/' :) . init . splitOn "/"
 
 updateFromCmd :: (String, FSTree) -> Cmd -> (String, FSTree)
 updateFromCmd (cwd, tree) cmd =
   case cmd of
     CD dir ->
-      case dir of
-        ".." -> (parentDir cwd, tree)
-        "/"  -> ("/", tree)
-        _    -> (joinPath cwd dir, tree)
+      case head dir of
+        '.' -> (parentDir cwd, tree)
+        '/' -> ("/", tree)
+        _   -> (joinPath cwd dir, tree)
     LS dirs files -> (cwd, updateFromLS cwd dirs files tree)
 
 toTree :: [Cmd] -> FSTree
@@ -105,7 +105,7 @@ day7'2 =
 --
 -- prettyPrintPath :: String -> FSTree -> [String]
 -- prettyPrintPath path tree =
---   case trace (show $ keys tree) (tree ! path) of
+--   case tree ! path of
 --     File size -> ["- " ++ path ++ " " ++ show size]
 --     Dir contents ->
 --       ("- " ++ path ++ " (dir)") :

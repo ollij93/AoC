@@ -38,9 +38,9 @@ data Direction
 parseDirection :: String -> Direction
 parseDirection s =
   case s of
-    "up"      -> Up
-    "down"    -> Down
-    _ -> Forward
+    "up"   -> Up
+    "down" -> Down
+    _      -> Forward
 
 parseInstruction :: String -> (Direction, Int)
 parseInstruction s = do
@@ -52,14 +52,15 @@ parseInstructions :: String -> [(Direction, Int)]
 parseInstructions = map parseInstruction . lines
 
 type ProcessInstructionFnc
-   = (Int, Int, Int) -> (Direction, Int) -> (Int, Int, Int)
+   = (Direction, Int) -> (Int, Int, Int) -> (Int, Int, Int)
 
 day2General :: ProcessInstructionFnc -> String -> Int
 day2General processInstruction =
-  (\(x, y, _) -> x * y) . foldl processInstruction (0, 0, 0) . parseInstructions
+  (\(x, y, _) -> x * y) .
+  foldr processInstruction (0, 0, 0) . reverse . parseInstructions
 
 processInstruction'1 :: ProcessInstructionFnc
-processInstruction'1 (x, y, aim) (dir, spd) =
+processInstruction'1 (dir, spd) (x, y, aim) =
   case dir of
     Forward -> (x + spd, y, aim)
     Up      -> (x, y - spd, aim)
@@ -69,7 +70,7 @@ day2'1 :: String -> Int
 day2'1 = day2General processInstruction'1
 
 processInstruction'2 :: ProcessInstructionFnc
-processInstruction'2 (x, y, aim) (dir, spd) =
+processInstruction'2 (dir, spd) (x, y, aim) =
   case dir of
     Forward -> (x + spd, y + aim * spd, aim)
     Up      -> (x, y, aim - spd)

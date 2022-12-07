@@ -32,7 +32,7 @@ parseItem c =
      else ord 'A' - 26)
 
 parsePocket :: [Int64] -> Int64
-parsePocket = foldl (.|.) 0
+parsePocket = foldr (.|.) 0
 
 parseBackpack :: [Int64] -> (Int64, Int64)
 parseBackpack = mapTuple parsePocket . bisect
@@ -48,7 +48,7 @@ day3'1 :: String -> Int
 day3'1 = sum . map (processBackpack . parseBackpack . map parseItem) . lines
 
 processGroupBackpacks :: [Int64] -> Int
-processGroupBackpacks = priority . foldl (.&.) allItems
+processGroupBackpacks = priority . foldr (.&.) allItems
 
 day3'2 :: String -> Int
 day3'2 =
