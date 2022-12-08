@@ -10,6 +10,7 @@ import           AoC2022.Day4 (day4'1, day4'2)
 import           AoC2022.Day5 (day5'1, day5'2)
 import           AoC2022.Day6 (day6'1, day6'2)
 import           AoC2022.Day7 (day7'1, day7'2)
+import           AoC2022.Day8 (day8'1, day8'2)
 
 -- Solution registry
 solutions :: [Solution]
@@ -109,5 +110,17 @@ solutions =
       , testPath = "inputs/2022/tests/day7.txt"
       , dataPath = "inputs/2022/day7.txt"
       , ifnc = day7'2
+      }
+  , ISolution
+      { name = "Day8.1"
+      , testPath = "inputs/2022/tests/day8.txt"
+      , dataPath = "inputs/2022/day8.txt"
+      , ifnc = day8'1
+      }
+  , ISolution
+      { name = "Day8.2"
+      , testPath = "inputs/2022/tests/day8.txt"
+      , dataPath = "inputs/2022/day8.txt"
+      , ifnc = day8'2
       }
   ]
