@@ -3,6 +3,7 @@ module Util
   , mapTuple3
   , splitOnce
   , every
+  , dbg
   ) where
 
 import Debug.Trace (trace)
