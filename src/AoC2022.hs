@@ -2,16 +2,17 @@ module AoC2022
   ( solutions
   ) where
 
-import           AoC          (Solution (..))
-import           AoC2022.Day1 (day1'1, day1'2)
-import           AoC2022.Day2 (day2'1, day2'1ascii, day2'2, day2'2ascii)
-import           AoC2022.Day3 (day3'1, day3'2)
-import           AoC2022.Day4 (day4'1, day4'2)
-import           AoC2022.Day5 (day5'1, day5'2)
-import           AoC2022.Day6 (day6'1, day6'2)
-import           AoC2022.Day7 (day7'1, day7'2)
-import           AoC2022.Day8 (day8'1, day8'2)
-import           AoC2022.Day9 (day9'1, day9'2)
+import           AoC           (Solution (..))
+import           AoC2022.Day01 (day1'1, day1'2)
+import           AoC2022.Day02 (day2'1, day2'1ascii, day2'2, day2'2ascii)
+import           AoC2022.Day03 (day3'1, day3'2)
+import           AoC2022.Day04 (day4'1, day4'2)
+import           AoC2022.Day05 (day5'1, day5'2)
+import           AoC2022.Day06 (day6'1, day6'2)
+import           AoC2022.Day07 (day7'1, day7'2)
+import           AoC2022.Day08 (day8'1, day8'2)
+import           AoC2022.Day09 (day9'1, day9'2)
+import           AoC2022.Day10 (day10'1, day10'2)
 
 -- Solution registry
 solutions :: [Solution]
@@ -135,5 +136,17 @@ solutions =
       , testPath = "inputs/2022/tests/day9_2.txt"
       , dataPath = "inputs/2022/day9.txt"
       , ifnc = day9'2
+      }
+  , ISolution
+      { name = "Day10.1"
+      , testPath = "inputs/2022/tests/day10.txt"
+      , dataPath = "inputs/2022/day10.txt"
+      , ifnc = day10'1
+      }
+  , ISolution
+      { name = "Day10.2"
+      , testPath = "inputs/2022/tests/day10_2.txt"
+      , dataPath = "inputs/2022/day10.txt"
+      , ifnc = day10'2
       }
   ]

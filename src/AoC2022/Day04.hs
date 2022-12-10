@@ -1,4 +1,4 @@
-module AoC2022.Day4
+module AoC2022.Day04
   ( day4'1
   , day4'2
   ) where
@@ -10,8 +10,7 @@ import           Util
 -- Parse functions
 parseSections :: String -> Int128
 parseSections =
-  foldr (.|.) 0 .
-  map (flip shiftR 1 . bit) .
+  foldr ((.|.) . flip shiftR 1 . bit) 0 .
   (\(x, y) -> [x .. y]) . mapTuple read . splitOnce '-'
 
 parsePair :: String -> (Int128, Int128)

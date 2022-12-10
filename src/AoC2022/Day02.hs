@@ -1,4 +1,4 @@
-module AoC2022.Day2
+module AoC2022.Day02
   ( day2'1
   , day2'2
   , day2'1ascii

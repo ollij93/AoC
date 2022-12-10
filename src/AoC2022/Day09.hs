@@ -1,4 +1,4 @@
-module AoC2022.Day9
+module AoC2022.Day09
   ( day9'1
   , day9'2
   ) where
