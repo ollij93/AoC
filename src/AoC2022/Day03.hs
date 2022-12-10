@@ -12,14 +12,6 @@ import           Util
 bisect :: [a] -> ([a], [a])
 bisect l = splitAt (length l `div` 2) l
 
--- Split a list into segments of a given size
-segments :: Int -> [a] -> [[a]]
-segments n l =
-  case l of
-    [] -> []
-    _  -> take n l : segments n (drop n l)
-
--- Parse functions
 allItems :: Int64
 allItems = bit 53 - 1
 

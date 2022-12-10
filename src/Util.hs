@@ -1,9 +1,10 @@
 module Util
-  ( mapTuple
-  , mapTuple3
-  , splitOnce
+  ( dbg
   , every
-  , dbg
+  , mapTuple
+  , mapTuple3
+  , segments
+  , splitOnce
   ) where
 
 import Debug.Trace (trace)
@@ -29,3 +30,12 @@ every n l =
 -- Debug a showable
 dbg :: Show a => String -> a -> a
 dbg s t = trace (s ++ show t) t
+
+-- Split a list into segments of a given size
+segments :: Int -> [a] -> [[a]]
+segments n l =
+  case l of
+    [] -> []
+    _  -> take n l : segments n (drop n l)
+
+-- Parse functions

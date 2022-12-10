@@ -143,10 +143,10 @@ solutions =
       , dataPath = "inputs/2022/day10.txt"
       , ifnc = day10'1
       }
-  , ISolution
+  , SSolution
       { name = "Day10.2"
-      , testPath = "inputs/2022/tests/day10_2.txt"
+      , testPath = "inputs/2022/tests/day10.txt"
       , dataPath = "inputs/2022/day10.txt"
-      , ifnc = day10'2
+      , sfnc = day10'2
       }
   ]

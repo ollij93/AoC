@@ -28,15 +28,16 @@ library
       AoC
       AoC2021
       AoC2022
-      AoC2022.Day1
-      AoC2022.Day2
-      AoC2022.Day3
-      AoC2022.Day4
-      AoC2022.Day5
-      AoC2022.Day6
-      AoC2022.Day7
-      AoC2022.Day8
-      AoC2022.Day9
+      AoC2022.Day01
+      AoC2022.Day02
+      AoC2022.Day03
+      AoC2022.Day04
+      AoC2022.Day05
+      AoC2022.Day06
+      AoC2022.Day07
+      AoC2022.Day08
+      AoC2022.Day09
+      AoC2022.Day10
       Util
   other-modules:
       Paths_aoc2022
