@@ -42,8 +42,8 @@ day10'1 = sumInteresting . processInstructions . parseInput
 crtVal :: Int -> Int -> Char
 crtVal idx reg =
   if idx < reg - 1 || idx > reg + 1
-    then '.'
-    else '#'
+    then ' '
+    else '\x2588'
 
 day10'2 :: String -> String
 day10'2 =
