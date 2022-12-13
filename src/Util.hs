@@ -5,6 +5,7 @@ module Util
   , mapTuple3
   , segments
   , splitOnce
+  , spacepad
   ) where
 
 import Debug.Trace (trace)
@@ -38,4 +39,7 @@ segments n l =
     [] -> []
     _  -> take n l : segments n (drop n l)
 
--- Parse functions
+-- Pad a string with spaces to make it at least the given length
+spacepad :: Int -> String -> String
+spacepad n s =
+  replicate (n - length s) ' ' ++ s
