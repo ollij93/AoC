@@ -137,8 +137,7 @@ run stopCond emitterXPos stepCount blocks =
     Just blks -> run stopCond emitterXPos (stepCount + 1) blks
 
 day14'1 :: String -> Int
-day14'1 =
-  run (\_ y blocks -> y >= length blocks - 1) 50 0 . parseBlocks
+day14'1 = run (\_ y blocks -> y >= length blocks - 1) 50 0 . parseBlocks
 
 day14'2'simulation :: String -> Int
 day14'2'simulation =

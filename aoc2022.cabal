@@ -42,6 +42,7 @@ library
       AoC2022.Day12
       AoC2022.Day13
       AoC2022.Day14
+      AoC2022.Day15
       Util
   other-modules:
       Paths_aoc2022
