@@ -3,6 +3,9 @@ module AoC2022.Day15
   , day15'2
   ) where
 
+import           Data.List  (nub, sort)
+import           Data.Maybe (mapMaybe)
+
 manhattenDistance :: (Int, Int) -> (Int, Int) -> Int
 manhattenDistance (ax, ay) (bx, by) = abs (ax - bx) + abs (ay - by)
 
@@ -61,18 +64,27 @@ impactOnY minX' maxX' y ((x'S, y'S), (x'B, y'B), range) =
   | x' <- [minX' .. maxX']
   ]
 
-overlay :: [Block] -> [Block] -> [Block]
-overlay =
-  zipWith
-    (\a b ->
-       if a == Unknown
-         then b
-         else a)
+-- Get the min and max X coordinates a sensor can detect at a given y value
+scanXRange :: Int -> SensorAndBeacon -> Maybe (Int, Int)
+scanXRange y ((x'S, y'S), _, range) = do
+  let (xS, yS) = fromDiags (x'S, y'S)
+  let yrange = max 0 (range - abs (yS - y))
+  if yrange > 0
+    then Just (xS - yrange, xS + yrange)
+    else Nothing
 
-blocks :: Int -> Int -> Int -> [SensorAndBeacon] -> [Block]
-blocks minX' maxX' y =
-  foldl overlay [Unknown | _ <- [minX' .. maxX']] .
-  map (impactOnY minX' maxX' y)
+mergeRanges :: [(Int, Int)] -> [(Int, Int)]
+mergeRanges =
+  foldl
+    (\curr (nmin, nmax) ->
+       case curr of
+         [] -> [(nmin, nmax)]
+         (pmin, pmax):rs ->
+           if nmin <= pmax
+             then (pmin, max pmax nmax) : rs
+             else (nmin, nmax) : curr)
+    [] .
+  sort
 
 -- Determines whether we're running the test or real input
 isTestData :: [SensorAndBeacon] -> Bool
@@ -87,7 +99,13 @@ day15'1 str = do
         if isTestData sensors
           then 2000000
           else 10
-  length . filter (== Clear) . blocks minX' maxX' y $ sensors
+  let numBeaconsInY =
+        length .
+        nub . filter (\b -> y == (snd . fromDiags $ b)) . map (\(_, b, _) -> b) $
+        sensors
+  (\a -> a - numBeaconsInY) .
+    sum . map (\(a, b) -> b - a + 1) . mergeRanges . mapMaybe (scanXRange y) $
+    sensors
 
 -- Part 2
 tuningFreq :: (Int, Int) -> Int
