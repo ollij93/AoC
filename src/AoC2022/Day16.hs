@@ -3,11 +3,10 @@ module AoC2022.Day16
   , day16'2
   ) where
 
-import           Data.HashMap (fromList, toList, unionWith, (!))
-import qualified Data.HashMap as Map
-import           Data.List    (delete, permutations, sort, (\\))
-import           Debug.Trace  (trace)
-import           Util         (dbg)
+import           Data.Function ((&))
+import           Data.HashMap  (fromList, toList, unionWith, (!))
+import qualified Data.HashMap  as Map
+import           Data.List     (delete, sort)
 
 data Node =
   Node
@@ -20,19 +19,83 @@ instance Show Node where
 
 type Graph = Map.Map String Node
 
+data ActorState
+  = MovingTo String Int
+  | OpeningValve String
+
+data Model =
+  Model
+    { graph            :: Graph
+    , valvesVisited    :: [String]
+    , valvesOpened     :: [String]
+    , selfState        :: ActorState
+    , elephantState    :: ActorState
+    , preasureRelieved :: Int
+    , timeRemaining    :: Int
+    }
+
+rate :: Model -> Int
+rate m = sum . map (\n -> value (graph m ! n)) . valvesOpened $ m
+
+updateSelf :: Model -> [Model]
+updateSelf model =
+  case selfState model of
+    MovingTo tgt remaining ->
+      if remaining <= 1
+        -- If we're only one step from the target start opening the valve in the next minute
+        then [model {selfState = OpeningValve tgt}]
+        -- If we're multiple steps from the target continue moving to the target
+        else [model {selfState = MovingTo tgt (remaining - 1)}]
+    OpeningValve curr
+      -- Finished opening a valve so consider all possible next moves
+        -- Options of continuing to next node
+     ->
+      (graph model ! curr & links & Map.toList &
+       filter (\(k, _) -> k `notElem` valvesVisited model) &
+       map
+         (\(newTgt, newCost) ->
+            model
+              { selfState = MovingTo newTgt newCost
+              , valvesVisited = newTgt : valvesVisited model
+              , valvesOpened = curr : valvesOpened model
+              }))
+        -- Option of walking around in a circle for the rest of time
+       ++
+      [ model
+          { selfState = MovingTo curr 500
+          , valvesOpened = curr : valvesOpened model
+          }
+      ]
+
+sim :: Model -> Int
+sim model =
+  if timeRemaining model <= 0
+    then preasureRelieved model
+    else do
+      maximum .
+        map
+          (\m ->
+             sim
+               (m
+                  { timeRemaining = timeRemaining m - 1
+                  , preasureRelieved = preasureRelieved m + rate m
+                  })) .
+        updateSelf $
+        model
+
 parseNode :: String -> (String, Node)
-parseNode s = do
-  let name = words s !! 1
-  let vlue = read . init . drop 5 $ (words s !! 4)
-  let lnks = fromList . map (\s -> (init s, 1)) . drop 9 . words $ (s ++ ",")
+parseNode str = do
+  let name = words str !! 1
+  let vlue = read . init . drop 5 $ (words str !! 4)
+  let lnks = fromList . map (\s -> (init s, 1)) . drop 9 . words $ (str ++ ",")
   (name, Node {value = vlue, links = lnks})
 
 parseInput :: String -> Graph
 parseInput = fromList . map parseNode . lines
 
 reduceNode :: String -> Graph -> Graph
-reduceNode name graph = do
-  let lnks = links (graph ! name)
+reduceNode name grph = do
+  let lnks = links (grph ! name)
   Map.mapWithKey
     (\self node ->
        Node
@@ -48,22 +111,22 @@ reduceNode name graph = do
                       (Map.delete name prevLinks)
                   Nothing -> prevLinks
          })
-    graph
+    grph
 
 connectAll :: Graph -> Graph
-connectAll graph = do
-  let keys = Map.keys graph
+connectAll grph = do
+  let keys = Map.keys grph
   let done =
         all
           (\(name, node) ->
              sort (Map.keys (links node)) == sort (delete name keys)) $
-        Map.toList graph
+        Map.toList grph
   if done
-    then graph
+    then grph
     else connectAll $
          foldl
-           (\grph key -> do
-              let lnks = links (graph ! key)
+           (\gr key -> do
+              let lnks = links (gr ! key)
               Map.mapWithKey
                 (\k node ->
                    if k == key
@@ -80,83 +143,28 @@ connectAll graph = do
                                        unionWith min currLinks newLinks
                                 }
                             Nothing -> node)
-                grph)
-           graph
+                gr)
+           grph
            keys
 
 reduceZeroes :: Graph -> Graph
-reduceZeroes graph = do
+reduceZeroes grph = do
   let zeroNodes =
-        map fst . filter (\(k, node) -> value node == 0) . toList $ graph
-  foldr reduceNode graph zeroNodes
-
-nonZeroKeys :: Graph -> [String]
-nonZeroKeys = map fst . filter (\(_, node) -> value node > 0) . Map.toList
-
-possibleOrders :: Graph -> [[String]]
-possibleOrders = permutations . nonZeroKeys
-
-journey :: [String] -> [(String, String)]
-journey l = zip l (drop 1 l)
-
-runJourney :: Int -> Graph -> [(String, String)] -> Int
-runJourney timeRemaining graph steps =
-  if timeRemaining <= 0
-    then 0
-    else case steps of
-           [] -> 0
-           (at, next):rest -> do
-             let val = value (graph ! at)
-             let stepCost = links (graph ! at) ! next
-             let timeAtNext =
-                   timeRemaining -
-                   (if val > 0
-                      then 1
-                      else 0) -
-                   stepCost
-             (timeRemaining - 1) * val +
-               case rest of
-                 [] ->
-                   if timeAtNext > 0
-                     then (timeAtNext - 1) * value (graph ! next)
-                     else 0
-                 _ -> runJourney timeAtNext graph rest
-
-explore :: Int -> Graph -> [String] -> Int
-explore timeRemaining graph stack =
-  if timeRemaining <= 0
-    then 0
-    else do
-      let currentNodeName = head stack
-      let val = value (graph ! currentNodeName)
-      let nexts =
-            filter (\(k, v) -> v < timeRemaining && k `notElem` stack) .
-            Map.toList . links $
-            graph ! currentNodeName
-      maximum
-        (val * (timeRemaining - 1) :
-         map
-           (\(nextName, nextCost) -> do
-              let timeAtNext =
-                    timeRemaining -
-                    (if val > 0
-                       then 1
-                       else 0) -
-                    nextCost
-              (val * (timeRemaining - 1)) +
-                explore timeAtNext graph (nextName : stack))
-           nexts)
+        map fst . filter (\(_, node) -> value node == 0) . toList $ grph
+  foldr reduceNode grph zeroNodes
 
 day16'1 :: String -> Int
-day16'1 input = do
-  let graph =
-        Map.mapWithKey dbg . reduceZeroes . connectAll . parseInput $ input
-  explore 30 graph ["AA"]
+day16'1 input =
+  sim
+    (Model
+       { graph = reduceZeroes . connectAll . parseInput $ input
+       , valvesVisited = ["AA"]
+       , valvesOpened = []
+       , selfState = OpeningValve "AA"
+       , elephantState = MovingTo "AA" 500
+       , preasureRelieved = 0
+       , timeRemaining = 30
+       })
 
---  let orders = possibleOrders graph
---  maximum $
---    map
---      (\order -> dbg (show order) $ runJourney 30 graph . journey $ "AA" : order)
---      orders
 day16'2 :: String -> Int
 day16'2 = length

@@ -30,7 +30,7 @@ every n l =
 
 -- Debug a showable
 dbg :: Show a => String -> a -> a
-dbg s t = trace (s ++ show t ++ "  ") t
+dbg s t = trace (s ++ "  " ++ show t) t
 
 -- Split a list into segments of a given size
 segments :: Int -> [a] -> [[a]]
