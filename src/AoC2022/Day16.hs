@@ -7,6 +7,8 @@ import           Data.Function ((&))
 import           Data.HashMap  (fromList, toList, unionWith, (!))
 import qualified Data.HashMap  as Map
 import           Data.List     (delete, sort)
+import           Debug.Trace   (trace)
+import           Util          (dbg)
 
 data Node =
   Node
@@ -37,35 +39,46 @@ data Model =
 rate :: Model -> Int
 rate m = sum . map (\n -> value (graph m ! n)) . valvesOpened $ m
 
-updateSelf :: Model -> [Model]
-updateSelf model =
-  case selfState model of
+updateActor :: (Model -> ActorState) -> Model -> [(ActorState, Model)]
+updateActor state model =
+  case state model of
     MovingTo tgt remaining ->
       if remaining <= 1
         -- If we're only one step from the target start opening the valve in the next minute
-        then [model {selfState = OpeningValve tgt}]
+        then [(OpeningValve tgt, model)]
         -- If we're multiple steps from the target continue moving to the target
-        else [model {selfState = MovingTo tgt (remaining - 1)}]
+        else [(MovingTo tgt (remaining - 1), model)]
     OpeningValve curr
       -- Finished opening a valve so consider all possible next moves
-        -- Options of continuing to next node
-     ->
-      (graph model ! curr & links & Map.toList &
-       filter (\(k, _) -> k `notElem` valvesVisited model) &
-       map
-         (\(newTgt, newCost) ->
-            model
-              { selfState = MovingTo newTgt newCost
-              , valvesVisited = newTgt : valvesVisited model
-              , valvesOpened = curr : valvesOpened model
-              }))
+     -> do
+      let walks =
+            graph model ! curr & links & Map.toList &
+            filter
+              (\(k, c) ->
+                 c + 1 < timeRemaining model && k `notElem` valvesVisited model) &
+            map
+              (\(newTgt, newCost) ->
+                 ( MovingTo newTgt newCost
+                 , model
+                     { valvesVisited = newTgt : valvesVisited model
+                     , valvesOpened = curr : valvesOpened model
+                     }))
+      if null walks
         -- Option of walking around in a circle for the rest of time
-       ++
-      [ model
-          { selfState = MovingTo curr 500
-          , valvesOpened = curr : valvesOpened model
-          }
-      ]
+        then [ ( MovingTo curr 500
+               , model {valvesOpened = curr : valvesOpened model})
+             ]
+        -- Options of continuing to next node
+        else walks
+
+updateSelf :: Model -> [Model]
+updateSelf =
+  map (\(state, model) -> model {selfState = state}) . updateActor selfState
+
+updateElephant :: Model -> [Model]
+updateElephant =
+  map (\(state, model) -> model {elephantState = state}) .
+  updateActor elephantState
 
 sim :: Model -> Int
 sim model =
@@ -74,13 +87,24 @@ sim model =
     else do
       maximum .
         map
-          (\m ->
-             sim
-               (m
-                  { timeRemaining = timeRemaining m - 1
-                  , preasureRelieved = preasureRelieved m + rate m
-                  })) .
-        updateSelf $
+          (\m -> do
+             let escape =
+                   case selfState m of
+                     OpeningValve _ -> False
+                     MovingTo _ sN ->
+                       sN > timeRemaining model &&
+                       case elephantState m of
+                         OpeningValve _ -> False
+                         MovingTo _ eN  -> eN > timeRemaining model
+             if escape
+               then preasureRelieved m + (rate m * timeRemaining m)
+               else dbg (show $ valvesOpened m) $
+                    sim
+                      (m
+                         { timeRemaining = timeRemaining m - 1
+                         , preasureRelieved = preasureRelieved m + rate m
+                         })) .
+        concatMap updateElephant . updateSelf $
         model
 
 parseNode :: String -> (String, Node)
@@ -167,4 +191,14 @@ day16'1 input =
        })
 
 day16'2 :: String -> Int
-day16'2 = length
+day16'2 input =
+  sim
+    (Model
+       { graph = reduceZeroes . connectAll . parseInput $ input
+       , valvesVisited = ["AA"]
+       , valvesOpened = []
+       , selfState = OpeningValve "AA"
+       , elephantState = OpeningValve "AA"
+       , preasureRelieved = 0
+       , timeRemaining = 26
+       })
