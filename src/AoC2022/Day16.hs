@@ -98,8 +98,7 @@ sim model =
                          MovingTo _ eN  -> eN > timeRemaining model
              if escape
                then preasureRelieved m + (rate m * timeRemaining m)
-               else dbg (show $ valvesOpened m) $
-                    sim
+               else sim
                       (m
                          { timeRemaining = timeRemaining m - 1
                          , preasureRelieved = preasureRelieved m + rate m
