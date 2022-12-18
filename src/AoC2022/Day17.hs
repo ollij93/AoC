@@ -14,6 +14,11 @@ data Dir
   = L
   | R
 
+instance Eq Dir where
+  L == L = True
+  R == R = True
+  _ == _ = False
+
 instance Show Block where
   show a =
     case a of
@@ -55,12 +60,55 @@ shift dir =
 shiftDown :: [[Block]] -> [[Block]]
 shiftDown bs = emptyRow : init bs
 
+accessibleBlocks :: [Block] -> [[Block]] -> [[Block]]
+accessibleBlocks row followingRows =
+  case followingRows of
+    [] -> []
+    nextrow:morerows -> do
+      let direct =
+            zipWith
+              (\c n ->
+                 if c == Air && n == Air
+                   then Air
+                   else Rock)
+              row
+              nextrow
+      let indirect =
+            zipWith
+              (\i n ->
+                 if n /= Rock &&
+                    Air `elem`
+                    [ direct !! i
+                    , direct !! max 0 (i - 1)
+                    , direct !! min 6 (i + 1)
+                    ]
+                   then Air
+                   else Rock)
+              [0 ..]
+              nextrow
+      if Air `elem` indirect
+        then trimLeadingAir $ indirect : accessibleBlocks indirect morerows
+        else []
+
+data Record =
+  Record
+    { rReel      :: [[[Block]]]
+    , dReel      :: [Dir]
+    , accessible :: [[Block]]
+    }
+
+instance Eq Record where
+  a == b =
+    (rReel a == rReel b) &&
+    (dReel a == dReel b) && (accessible a == accessible b)
+
 data Model =
   Model
     { free     :: [[Block]]
     , fixed    :: [[Block]]
     , rockReel :: [[[Block]]]
     , dirReel  :: [Dir]
+    , records  :: [Record]
     }
 
 instance Show Model where
@@ -144,8 +192,21 @@ runTillFixed model = do
        else shiftedFree)
     (model {dirReel = tail (dirReel model) ++ [dir]})
 
+addRecord :: Model -> Model
+addRecord model =
+  model
+    { records =
+        Record
+          { rReel = rockReel model
+          , dReel = dirReel model
+          , accessible = accessibleBlocks emptyRow (fixed model)
+          } :
+        records model
+    }
+
 run :: Int -> Model -> Model
-run limit model = iterate (runTillFixed . startNextRockShape) model !! limit
+run limit model =
+  iterate (addRecord . runTillFixed . startNextRockShape) model !! limit
 
 parseInput :: String -> [Dir]
 parseInput =
@@ -156,7 +217,17 @@ parseInput =
          else R)
 
 day17'1 :: String -> Int
-day17'1 = length . trimLeadingAir . fixed . run 2022 . initialModel . parseInput
+day17'1 =
+  length .
+  trimLeadingAir .
+  fixed .
+  (\model ->
+     trace
+       (concatMap
+          (\row -> '\n' : concatMap show row)
+          (accessible $ head $ records model))
+       model) .
+  run 2022 . initialModel . parseInput
 
 day17'2 :: String -> Int
 day17'2 = length
