@@ -5,7 +5,7 @@ module AoC2022.Day17
 
 import           Data.List   (elemIndex)
 import           Debug.Trace (trace)
-import           Util        (dbg)
+import           Util        (every)
 
 data Block
   = Air
@@ -14,11 +14,6 @@ data Block
 data Dir
   = L
   | R
-
-instance Eq Dir where
-  L == L = True
-  R == R = True
-  _ == _ = False
 
 instance Show Block where
   show a =
@@ -93,23 +88,24 @@ accessibleBlocks row followingRows =
 
 data Record =
   Record
-    { rReel      :: [[[Block]]]
-    , dReel      :: [Dir]
+    { rIdx       :: Int
+    , dIdx       :: Int
     , accessible :: [[Block]]
     }
 
 instance Eq Record where
   a == b =
-    (rReel a == rReel b) &&
-    (dReel a == dReel b) && (accessible a == accessible b)
+    (rIdx a == rIdx b) && (dIdx a == dIdx b) && (accessible a == accessible b)
 
 data Model =
   Model
-    { free     :: [[Block]]
-    , fixed    :: [[Block]]
-    , rockReel :: [[[Block]]]
-    , dirReel  :: [Dir]
-    , records  :: [Record]
+    { free         :: [[Block]]
+    , fixed        :: [[Block]]
+    , rockShapeIdx :: Int
+    , dirIdx       :: Int
+    , dirs         :: [Dir]
+    , records      :: [Record]
+    , heights      :: [Int]
     }
 
 instance Show Model where
@@ -131,13 +127,15 @@ instance Show Model where
     [0 .. length (fixed m) - 1]
 
 initialModel :: [Dir] -> Model
-initialModel dirs =
+initialModel inputDirs =
   Model
     { free = []
     , fixed = [emptyRow]
-    , rockReel = rockShapes
-    , dirReel = dirs
+    , rockShapeIdx = 0
+    , dirIdx = 0
+    , dirs = inputDirs
     , records = []
+    , heights = []
     }
 
 trimLeadingAir :: [[Block]] -> [[Block]]
@@ -154,7 +152,7 @@ emptyRow = [Air | _ <- [1 .. 7 :: Int]]
 
 startNextRockShape :: Model -> Model
 startNextRockShape model = do
-  let rockShape = head (rockReel model)
+  let rockShape = rockShapes !! rockShapeIdx model
   let trimmedFixed = trimLeadingAir $ fixed model
   let rockRows = map (\row -> take 7 $ [Air, Air] ++ row ++ emptyRow) rockShape
   let newFree = rockRows ++ [emptyRow | _ <- [1 .. length trimmedFixed + 3]]
@@ -162,7 +160,7 @@ startNextRockShape model = do
   model
     { free = newFree
     , fixed = newFixed
-    , rockReel = tail (rockReel model) ++ [rockShape]
+    , rockShapeIdx = (rockShapeIdx model + 1) `mod` length rockShapes
     }
 
 clash :: [[Block]] -> [[Block]] -> Bool
@@ -191,47 +189,65 @@ dropFrom freeBlocks model = do
 
 runTillFixed :: Model -> Model
 runTillFixed model = do
-  let dir = head (dirReel model)
+  let dir = dirs model !! dirIdx model
   let shiftedFree = shift dir (free model)
   dropFrom
     (if clash shiftedFree (fixed model)
        then free model
        else shiftedFree)
-    (model {dirReel = tail (dirReel model) ++ [dir]})
+    (model {dirIdx = (dirIdx model + 1) `mod` length (dirs model)})
+
+height :: Model -> Int
+height = length . trimLeadingAir . fixed
 
 addRecord :: Model -> Model
 addRecord model =
   model
     { records =
         Record
-          { rReel = rockReel model
-          , dReel = dirReel model
+          { rIdx = rockShapeIdx model
+          , dIdx = dirIdx model
           , accessible = accessibleBlocks emptyRow (fixed model)
           } :
         records model
+    , heights = height model : heights model
     }
 
-run :: Int -> Model -> Model
+run :: Int -> Model -> Int
 run limit model =
   if length (records model) >= limit
-    then model
+    then height model
     else do
       let new = addRecord . runTillFixed . startNextRockShape $ model
-      case head (records new) `elemIndex` tail (records new) of
+      let recordsToCheck = every (length rockShapes) (records model)
+      case head (records new) `elemIndex` recordsToCheck of
         Just prevIdx
         -- Have seen this same state before!
          -> do
           let currRockNum = length (records new)
-          let loopLen = prevIdx + 1
+          let loopLen = (prevIdx + 1) * length rockShapes
           let rocksRemaining = limit - currRockNum
           let loopsRemaining = rocksRemaining `div` loopLen
           let extraStepsAfterLoop = rocksRemaining `mod` loopLen
+          let currHeight = head (heights new)
+          let prevHeight = heights new !! loopLen
+          let loopHeight = currHeight - prevHeight
+          let heightFromLoops = currHeight + (loopsRemaining * loopHeight)
+          let heightFromExtraSteps =
+                (heights new !! (loopLen - extraStepsAfterLoop)) - prevHeight
           trace
             ("LOOP of length " ++
              show loopLen ++
              " (" ++
-             show loopsRemaining ++ "/" ++ show extraStepsAfterLoop ++ ")") $
-            run limit new
+             show loopsRemaining ++
+             "/" ++
+             show extraStepsAfterLoop ++
+             ")" ++
+             " has height " ++
+             show loopHeight ++
+             " implying height of " ++
+             show (heightFromLoops + heightFromExtraSteps)) $
+            heightFromLoops + heightFromExtraSteps
         Nothing -> run limit new
 
 parseInput :: String -> [Dir]
@@ -243,7 +259,7 @@ parseInput =
          else R)
 
 day17'1 :: String -> Int
-day17'1 = length . trimLeadingAir . fixed . run 2022 . initialModel . parseInput
+day17'1 = run 2022 . initialModel . parseInput
 
 day17'2 :: String -> Int
-day17'2 = length
+day17'2 = run 1000000000000 . initialModel . parseInput

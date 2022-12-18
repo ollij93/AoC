@@ -235,12 +235,12 @@ solutions =
       , dataPath = "inputs/2022/day17.txt"
       , ifnc = day17'1
       }
---   , ISolution
---       { name = "Day17.2"
---       , testPath = "inputs/2022/tests/day17.txt"
---       , dataPath = "inputs/2022/day17.txt"
---       , ifnc = day17'2
---       }
+  , ISolution
+      { name = "Day17.2"
+      , testPath = "inputs/2022/tests/day17.txt"
+      , dataPath = "inputs/2022/day17.txt"
+      , ifnc = day17'2
+      }
   , ISolution
       { name = "Day18.1"
       , testPath = "inputs/2022/tests/day18.txt"
