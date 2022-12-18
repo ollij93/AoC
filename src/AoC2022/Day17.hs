@@ -131,7 +131,13 @@ instance Show Model where
 
 initialModel :: [Dir] -> Model
 initialModel dirs =
-  Model {free = [], fixed = [emptyRow], rockReel = rockShapes, dirReel = dirs}
+  Model
+    { free = []
+    , fixed = [emptyRow]
+    , rockReel = rockShapes
+    , dirReel = dirs
+    , records = []
+    }
 
 trimLeadingAir :: [[Block]] -> [[Block]]
 trimLeadingAir region =
@@ -206,7 +212,9 @@ addRecord model =
 
 run :: Int -> Model -> Model
 run limit model =
-  iterate (addRecord . runTillFixed . startNextRockShape) model !! limit
+  if length (records model) >= limit
+    then model
+    else run limit . addRecord . runTillFixed . startNextRockShape $ model
 
 parseInput :: String -> [Dir]
 parseInput =
