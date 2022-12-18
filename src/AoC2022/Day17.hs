@@ -124,38 +124,28 @@ merge =
             then Rock
             else Air))
 
+dropFrom :: [[Block]] -> Model -> Model
+dropFrom freeBlocks model = do
+  let droppedFree = shiftDown freeBlocks
+  if any (/= Air) (last freeBlocks) || clash droppedFree (fixed model)
+    then model
+           { fixed = merge freeBlocks (fixed model)
+           , free = [emptyRow | _ <- [1 .. length (fixed model)]]
+           }
+    else runTillFixed model {free = droppedFree}
+
 runTillFixed :: Model -> Model
 runTillFixed model = do
   let dir = head (dirReel model)
   let shiftedFree = shift dir (free model)
-  if clash shiftedFree (fixed model)
-    then do
-      -- Shifting would cause a clash, so don't shift
-      let droppedFree = shiftDown (free model)
-      if any (/= Air) (last (free model)) || clash droppedFree (fixed model)
-        then model
-               { fixed = merge (free model) (fixed model)
-               , free = [emptyRow | _ <- [1 .. length (fixed model)]]
-               , dirReel = tail (dirReel model) ++ [dir]
-               }
-        else runTillFixed
-               model {free = droppedFree, dirReel = tail (dirReel model) ++ [dir]}
+  dropFrom
+    (if clash shiftedFree (fixed model)
+       then free model
+       else shiftedFree)
+    (model {dirReel = tail (dirReel model) ++ [dir]})
 
-    else do
-      -- Shifting was successful, check dropping
-      let droppedFree = shiftDown shiftedFree
-      if any (/= Air) (last (free model)) || clash droppedFree (fixed model)
-        then model
-               { fixed = merge shiftedFree (fixed model)
-               , free = [emptyRow | _ <- [1 .. length (fixed model)]]
-               , dirReel = tail (dirReel model) ++ [dir]
-               }
-        else runTillFixed
-               model {free = droppedFree, dirReel = tail (dirReel model) ++ [dir]}
-
-run :: Model -> Model
-run model =
-  foldl (\m _ -> runTillFixed . startNextRockShape $ m) model [0 .. 2021 :: Int]
+run :: Int -> Model -> Model
+run limit model = iterate (runTillFixed . startNextRockShape) model !! limit
 
 parseInput :: String -> [Dir]
 parseInput =
@@ -166,7 +156,7 @@ parseInput =
          else R)
 
 day17'1 :: String -> Int
-day17'1 = length . trimLeadingAir . fixed . run . initialModel . parseInput
+day17'1 = length . trimLeadingAir . fixed . run 2022 . initialModel . parseInput
 
 day17'2 :: String -> Int
 day17'2 = length
