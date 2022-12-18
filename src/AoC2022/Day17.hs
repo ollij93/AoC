@@ -3,6 +3,7 @@ module AoC2022.Day17
   , day17'2
   ) where
 
+import           Data.List   (elemIndex)
 import           Debug.Trace (trace)
 import           Util        (dbg)
 
@@ -214,7 +215,24 @@ run :: Int -> Model -> Model
 run limit model =
   if length (records model) >= limit
     then model
-    else run limit . addRecord . runTillFixed . startNextRockShape $ model
+    else do
+      let new = addRecord . runTillFixed . startNextRockShape $ model
+      case head (records new) `elemIndex` tail (records new) of
+        Just prevIdx
+        -- Have seen this same state before!
+         -> do
+          let currRockNum = length (records new)
+          let loopLen = prevIdx + 1
+          let rocksRemaining = limit - currRockNum
+          let loopsRemaining = rocksRemaining `div` loopLen
+          let extraStepsAfterLoop = rocksRemaining `mod` loopLen
+          trace
+            ("LOOP of length " ++
+             show loopLen ++
+             " (" ++
+             show loopsRemaining ++ "/" ++ show extraStepsAfterLoop ++ ")") $
+            run limit new
+        Nothing -> run limit new
 
 parseInput :: String -> [Dir]
 parseInput =
@@ -225,17 +243,7 @@ parseInput =
          else R)
 
 day17'1 :: String -> Int
-day17'1 =
-  length .
-  trimLeadingAir .
-  fixed .
-  (\model ->
-     trace
-       (concatMap
-          (\row -> '\n' : concatMap show row)
-          (accessible $ head $ records model))
-       model) .
-  run 2022 . initialModel . parseInput
+day17'1 = length . trimLeadingAir . fixed . run 2022 . initialModel . parseInput
 
 day17'2 :: String -> Int
 day17'2 = length
