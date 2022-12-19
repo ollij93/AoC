@@ -6,8 +6,6 @@ module AoC2022.Day19
 import           Data.List   (sort)
 import           Data.Set    (Set)
 import qualified Data.Set    as Set
-import           Debug.Trace (trace)
-import           Util        (dbg)
 
 data Price =
   Price
@@ -161,18 +159,18 @@ keepBest :: Int -> Set Inventory -> Set Inventory
 keepBest n = Set.fromList . take n . reverse . sort . Set.toList
 
 run :: Int -> Blueprint -> Int
-run minutes bp =
-  maximum . Set.map geodes $
+run minutes bp
+  -- Sim N-1 minutes and on the last minute just make as many geodes as
+  -- possible, ignoring other values
+ =
+  maximum . Set.map (\inv -> geodes inv + geodeBots inv) $
   iterate
-    (keepBest 500 . filterInvs . Set.unions . Set.map (tick bp))
+    (keepBest 100 . filterInvs . Set.unions . Set.map (tick bp))
     (Set.singleton initialInventory) !!
-  minutes
+  (minutes - 1)
 
 qualityLevel :: Int -> Blueprint -> Int
-qualityLevel bpid =
-  (\n ->
-     trace (show bpid ++ ": " ++ show n ++ " => " ++ show (n * bpid)) n * bpid) .
-  run 24
+qualityLevel bpid bp = bpid * run 24 bp
 
 day19'1 :: String -> Int
 day19'1 = sum . zipWith qualityLevel [1 ..] . map parseLine . lines
@@ -180,5 +178,4 @@ day19'1 = sum . zipWith qualityLevel [1 ..] . map parseLine . lines
 day19'2 :: String -> Int
 day19'2 =
   product .
-  zipWith (\i n -> dbg (show i ++ ":") n) [1 ..] .
   map (run 32 . parseLine) . take 3 . lines
