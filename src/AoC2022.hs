@@ -23,6 +23,7 @@ import           AoC2022.Day17 (day17'1, day17'2)
 import           AoC2022.Day18 (day18'1, day18'2)
 import           AoC2022.Day19 (day19'1, day19'2)
 import           AoC2022.Day20 (day20'1, day20'2)
+import           AoC2022.Day21 (day21'1, day21'2)
 
 -- Solution registry
 solutions :: [Solution]
@@ -278,5 +279,17 @@ solutions =
       , testPath = "inputs/2022/tests/day20.txt"
       , dataPath = "inputs/2022/day20.txt"
       , ifnc = day20'2
+      }
+  , ISolution
+      { name = "Day21.1"
+      , testPath = "inputs/2022/tests/day21.txt"
+      , dataPath = "inputs/2022/day21.txt"
+      , ifnc = day21'1
+      }
+  , ISolution
+      { name = "Day21.2"
+      , testPath = "inputs/2022/tests/day21.txt"
+      , dataPath = "inputs/2022/day21.txt"
+      , ifnc = day21'2
       }
   ]
