@@ -2,6 +2,8 @@
     "editor.tabSize": 4,
     "files.exclude": {
         "**/dist-newstyle": true,
+        "**/target": true,
         "bazel-*": true,
-    }
+    },
+    "rust.clippy_preference": "on",
 }

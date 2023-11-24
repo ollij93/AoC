@@ -1,31 +1,4 @@
-# Advent of Code solutions
-
-## 2023 - C/C++
-
-C/C++ built with bazel
-
-Build with:
-
-```bash
-$ bazel build //2023:aoc2023
-```
-
-Run with:
-
-```bash
-$ bazel-bin/2023/aoc2023
-Hello, World!
-```
-
-## 2022 - haskell
-
-My first haskell project
-
-[View benchmark report](https://htmlpreview.github.io/?https://github.com/ollij93/AoC/blob/main/2022/bench.html)
-
-## 2021 - rust
-
-My first rust!
+# Advent of Code 2021 (My first rust!)
 
 Advent of Code solutions for 2021 written in rust.
 My first time using rust so a lot of this is probably very questionable!
@@ -38,6 +11,6 @@ function which get invoked from `main()` in `src/main.rs`. To run the code
 for a given day specify the CLI option for the day and provide the input on
 stdin like so:
 
-```bash
-$ cargo run -- -d 1 < inputs/day1.txt
+```
+cargo run -- -d 1 < inputs/day1.txt
 ```
