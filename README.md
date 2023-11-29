@@ -17,6 +17,20 @@ $ bazel-bin/2023/aoc2023
 Hello, World!
 ```
 
+### Debugging
+
+Add the `--compilation_mode=dbg` flag to the build command and load the binary with lldb:
+
+```bash
+ $ lldb bazel-bin/2023/aoc2023
+(lldb) target create "bazel-bin/2023/aoc2023"
+Current executable set to '/Users/olijohns/AoC/bazel-bin/2023/aoc2023' (arm64).
+(lldb) process launch --stop-at-entry
+...
+```
+
+This is setup in the launch.json and task.json files for VSCode to enable interactive debugging in the editor.
+
 ## 2022 - haskell
 
 My first haskell project

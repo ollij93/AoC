@@ -1,0 +1,19 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "aoc2023",
+            "preLaunchTask": "build",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/bazel-bin/2023/aoc2023",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "sourceFileMap": { "2023": "${workspaceFolder}/2023" },
+        },
+    ]
+}
