@@ -6,4 +6,5 @@
         "bazel-*": true,
     },
     "rust.clippy_preference": "on",
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
 }

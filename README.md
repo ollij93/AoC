@@ -8,6 +8,7 @@ Build with:
 
 ```bash
 $ bazel build //2023:aoc2023
+...
 ```
 
 Run with:
@@ -17,12 +18,19 @@ $ bazel-bin/2023/aoc2023
 Hello, World!
 ```
 
+Test with:
+
+```bash
+$ bazel test //2023:aoc2023_test
+...
+```
+
 ### Debugging
 
 Add the `--compilation_mode=dbg` flag to the build command and load the binary with lldb:
 
 ```bash
- $ lldb bazel-bin/2023/aoc2023
+$ lldb bazel-bin/2023/aoc2023
 (lldb) target create "bazel-bin/2023/aoc2023"
 Current executable set to '/Users/olijohns/AoC/bazel-bin/2023/aoc2023' (arm64).
 (lldb) process launch --stop-at-entry
@@ -54,4 +62,5 @@ stdin like so:
 
 ```bash
 $ cargo run -- -d 1 < inputs/day1.txt
+...
 ```

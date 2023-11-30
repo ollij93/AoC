@@ -1,0 +1,12 @@
+BasedOnStyle: LLVM
+Standard: c++17
+
+# Indentation
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Newline behavior
+BinPackArguments: false
+BinPackParameters: false
+PackConstructorInitializers: Never
