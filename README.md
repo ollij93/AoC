@@ -7,7 +7,7 @@ C/C++ built with bazel
 Build with:
 
 ```bash
-$ bazel build //2023:aoc2023 --cxxopt='-std=c++17' -k
+$ bazel build //2023:aoc2023
 ...
 ```
 
@@ -21,7 +21,7 @@ Hello, World!
 Test with:
 
 ```bash
-$ bazel test //2023:aoc2023_test --cxxopt='-std=c++17' --test_output=errors
+$ bazel test //2023:aoc2023_test
 ...
 ```
 
