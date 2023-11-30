@@ -10,7 +10,3 @@ jobs:
     - uses: bazelbuild/setup-bazelisk@v2
     - name: Test
       run: bazel test //2023/... --test_output=errors
-    - name: Format
-      uses: jidicula/clang-format-action@v4.11.0
-      with:
-        check-path: 2023

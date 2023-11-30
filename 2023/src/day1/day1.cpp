@@ -1,5 +1,5 @@
-#include <vector>
 #include "day1.hpp"
+#include <vector>
 
 int Day1Solution::part1(std::istream &in) const {
     auto calories = std::vector<int>();

@@ -1,5 +1,5 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 /**
  * Base class for all solutions.
