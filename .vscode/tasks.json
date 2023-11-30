@@ -10,5 +10,14 @@
                 "isDefault": true
             },
         },
+        {
+            "label": "test",
+            "type": "shell",
+            "command": "bazel test --compilation_mode=dbg //... --cxxopt='-std=c++17' --test_output=errors",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+        },
     ],
 }

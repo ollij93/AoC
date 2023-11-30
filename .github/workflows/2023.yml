@@ -8,4 +8,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: bazelbuild/setup-bazelisk@v2
-    - run: bazel test //2023/... --cxxopt='-std=c++17' --test_output=errors
+    - name: Test
+      run: bazel test //2023/... --cxxopt='-std=c++17' --test_output=errors
+    - name: Format
+      uses: jidicula/clang-format-action@v4.11.0
+      with:
+        check-path: 2023
