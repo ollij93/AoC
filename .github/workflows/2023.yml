@@ -8,4 +8,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: bazelbuild/setup-bazelisk@v2
-    - run: bazel test //2023/... --cxxopt='-std=c++17'
+    - run: bazel test //2023/... --cxxopt='-std=c++17' --test_output=errors

@@ -21,7 +21,7 @@ Hello, World!
 Test with:
 
 ```bash
-$ bazel test //2023:aoc2023_test --cxxopt='-std=c++17'
+$ bazel test //2023:aoc2023_test --cxxopt='-std=c++17' --test_output=errors
 ...
 ```
 
