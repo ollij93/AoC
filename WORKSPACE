@@ -18,7 +18,6 @@ load("@toolchains_llvm//toolchain:rules.bzl", "llvm_toolchain")
 llvm_toolchain(
     name = "llvm_toolchain",
     llvm_version = "16.0.0",
-    cxx_standard = {"": "c++17"},
 )
 
 load("@llvm_toolchain//:toolchains.bzl", "llvm_register_toolchains")
