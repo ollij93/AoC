@@ -2,10 +2,11 @@
     "configurations": [
         {
             "name": "Mac",
-            "compilerPath": "/usr/bin/clang",
+            "compilerPath": "/usr/bin/clang++",
             "includePath": [
                 "bazel-AoC/external/catch2/src",
                 "bazel-out/darwin_arm64-dbg/bin/external/catch2",
+                "bazel-out/darwin_arm64-fastbuild/bin/external/catch2",
                 "2023/src"
             ],
             "macFrameworkPath": [
