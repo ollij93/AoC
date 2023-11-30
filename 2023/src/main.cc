@@ -1,6 +1,9 @@
-#include <iostream>
+#include "day1/day1.h"
 
 int main() {
-  std::cout << "Hello, World!" << std::endl;
+  const Solution *solutions[] = {new Day1Solution()};
+  for (auto solution : solutions) {
+    solution->run();
+  }
   return 0;
 }

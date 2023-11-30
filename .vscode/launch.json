@@ -13,7 +13,25 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb",
-            "sourceFileMap": { "2023": "${workspaceFolder}/2023" },
+            "sourceFileMap": {
+                "2023": "${workspaceFolder}/2023"
+            },
+        },
+        {
+            "name": "test aoc2023",
+            "preLaunchTask": "build",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/bazel-bin/2023/aoc2023_test",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb",
+            "sourceFileMap": {
+                "2023": "${workspaceFolder}/2023"
+            },
         },
     ]
 }
