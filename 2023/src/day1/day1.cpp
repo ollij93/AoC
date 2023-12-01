@@ -1,5 +1,6 @@
 #include "day1.hpp"
 #include <vector>
+#include <optional>
 
 using namespace std;
 
