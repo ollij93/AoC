@@ -7,4 +7,7 @@
     },
     "rust.clippy_preference": "on",
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true,
+    "editor.renderFinalNewline": "dimmed",
 }
