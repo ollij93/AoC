@@ -23,16 +23,13 @@ class Solution {
     }
 
     Solution(std::string inputfilepath,
-             std::string testfilepath,
              int exp_test_result_p1,
              int exp_test_result_p2)
         : inputfilepath(inputfilepath),
-          testfilepath(testfilepath),
           exp_test_result_p1(exp_test_result_p1),
           exp_test_result_p2(exp_test_result_p2){};
 
     std::string inputfilepath;
-    std::string testfilepath;
     int exp_test_result_p1;
     int exp_test_result_p2;
 };

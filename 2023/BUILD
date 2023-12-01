@@ -27,6 +27,7 @@ cc_test(
         ":day1",
     ],
     data = [
-        "src/day1/day1.testinput",
+        "src/day1/day1.testinput1",
+        "src/day1/day1.testinput2",
     ],
 )
