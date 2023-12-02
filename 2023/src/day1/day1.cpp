@@ -1,6 +1,6 @@
 #include "day1.hpp"
-#include <vector>
 #include <optional>
+#include <vector>
 
 using namespace std;
 
@@ -11,6 +11,7 @@ optional<tuple<int, int>> parse_line(string line, bool inc_strings = false) {
     auto digits = vector<int>();
     for (auto &c : line) {
         if (isdigit(c)) {
+            // For digits, just take the digits value
             digits.push_back(c - '0');
         } else if (inc_strings) {
             // For part 2, check if the character is the start of a digit
@@ -39,8 +40,8 @@ vector<tuple<int, int>> parse_input(istream &in, bool inc_strings = false) {
     return result;
 }
 
-int Day1Solution::part1(istream &in) const {
-    auto pairs = parse_input(in);
+int sum_pairs(istream &in, bool inc_strings = false) {
+    auto pairs = parse_input(in, inc_strings);
     auto sum = 0;
     for (auto &pair : pairs) {
         auto value = 10 * get<0>(pair) + get<1>(pair);
@@ -49,12 +50,5 @@ int Day1Solution::part1(istream &in) const {
     return sum;
 }
 
-int Day1Solution::part2(istream &in) const {
-    auto pairs = parse_input(in, true);
-    auto sum = 0;
-    for (auto &pair : pairs) {
-        auto value = 10 * get<0>(pair) + get<1>(pair);
-        sum += value;
-    }
-    return sum;
-}
+int Day1Solution::part1(istream &in) const { return sum_pairs(in); }
+int Day1Solution::part2(istream &in) const { return sum_pairs(in, true); }
