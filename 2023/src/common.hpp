@@ -16,10 +16,12 @@ class Solution {
      */
     void run() const {
         std::ifstream input(inputfilepath);
-        std::cout << name() << ", Part 1: " << part1(input) << std::endl;
+        int p1 = part1(input);
+        std::cout << name() << ", Part 1: " << p1 << std::endl;
         input.close();
         input.open(inputfilepath);
-        std::cout << name() << ", Part 2: " << part2(input) << std::endl;
+        int p2 = part2(input);
+        std::cout << name() << ", Part 2: " << p2 << std::endl;
         input.close();
     }
 

@@ -20,12 +20,20 @@ cc_library(
     deps = [":common"],
 )
 
+cc_library(
+    name = "day3",
+    srcs = ["src/day3/day3.cpp"],
+    hdrs = ["src/day3/day3.hpp"],
+    deps = [":common"],
+)
+
 cc_binary(
     name = "aoc2023",
     srcs = ["src/main.cpp"],
     deps = [
         ":day1",
         ":day2",
+        ":day3",
     ],
 )
 
@@ -36,10 +44,12 @@ cc_test(
         "src/day1/day1.testinput1",
         "src/day1/day1.testinput2",
         "src/day2/day2.testinput",
+        "src/day3/day3.testinput",
     ],
     deps = [
         ":day1",
         ":day2",
+        ":day3",
         "@catch2//:catch2_main",
     ],
 )
