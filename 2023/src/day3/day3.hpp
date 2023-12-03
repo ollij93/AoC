@@ -7,5 +7,5 @@ class Day3Solution : public Solution {
     int part2(std::istream &in) const final override;
 
     Day3Solution()
-        : Solution("2023/src/day3/day3.input", 4361, 0) {}
+        : Solution("2023/src/day3/day3.input", 4361, 467835) {}
 };
