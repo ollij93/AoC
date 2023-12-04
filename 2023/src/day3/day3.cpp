@@ -115,8 +115,6 @@ int Day3Solution::part2(std::istream &in) const {
     auto result = process(in);
     int ret = 0;
     for (auto [pos, gear] : result.gearratios) {
-        cout << get<0>(pos) << "," << get<1>(pos) << ": " << gear.r1 << " "
-             << gear.r2 << endl;
         auto [r1, r2] = gear;
         ret += r1 * r2;
     }
