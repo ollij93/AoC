@@ -5,6 +5,7 @@
 #include "day2/day2.hpp"
 #include "day3/day3.hpp"
 #include "day4/day4.hpp"
+#include "day5/day5.hpp"
 
 TEST_CASE("Day1Solution", "[day1]") {
     auto solution = Day1Solution();
@@ -59,6 +60,22 @@ TEST_CASE("Day3Solution", "[day3]") {
 TEST_CASE("Day4Solution", "[day4]") {
     auto solution = Day4Solution();
     std::ifstream input("2023/src/day4/day4.testinput");
+    SECTION("Part 1") {
+        int result = solution.part1(input);
+        int expected = solution.exp_test_result_p1;
+        REQUIRE(result == expected);
+    }
+    SECTION("Part 2") {
+        int result = solution.part2(input);
+        int expected = solution.exp_test_result_p2;
+        REQUIRE(result == expected);
+    }
+    input.close();
+}
+
+TEST_CASE("Day5Solution", "[day5]") {
+    auto solution = Day5Solution();
+    std::ifstream input("2023/src/day5/day5.testinput");
     SECTION("Part 1") {
         int result = solution.part1(input);
         int expected = solution.exp_test_result_p1;
