@@ -36,3 +36,5 @@ class Solution {
     int exp_test_result_p1;
     int exp_test_result_p2;
 };
+
+std::vector<std::string> split(const std::string &s, const std::string &delim);

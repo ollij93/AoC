@@ -2,6 +2,7 @@ load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 
 cc_library(
     name = "common",
+    srcs = ["src/common.cpp"],
     hdrs = ["src/common.hpp"],
     includes = ["src"],
 )
@@ -34,6 +35,13 @@ cc_library(
     deps = [":common"],
 )
 
+cc_library(
+    name = "day6",
+    srcs = ["src/day6/day6.cpp"],
+    hdrs = ["src/day6/day6.hpp"],
+    deps = [":common"],
+)
+
 cc_binary(
     name = "aoc2023",
     srcs = ["src/main.cpp"],
@@ -42,6 +50,7 @@ cc_binary(
         ":day2",
         ":day3",
         ":day4",
+        ":day6",
     ],
 )
 
@@ -54,12 +63,14 @@ cc_test(
         "src/day2/day2.testinput",
         "src/day3/day3.testinput",
         "src/day4/day4.testinput",
+        "src/day6/day6.testinput",
     ],
     deps = [
         ":day1",
         ":day2",
         ":day3",
         ":day4",
+        ":day6",
         "@catch2//:catch2_main",
     ],
 )
