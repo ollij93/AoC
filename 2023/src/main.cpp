@@ -3,6 +3,7 @@
 #include "day3/day3.hpp"
 #include "day4/day4.hpp"
 #include "day6/day6.hpp"
+#include "day7/day7.hpp"
 
 int main() {
     const Solution *solutions[] = {
@@ -11,6 +12,7 @@ int main() {
         new Day3Solution(),
         new Day4Solution(),
         new Day6Solution(),
+        new Day7Solution(),
     };
     for (auto solution : solutions) {
         solution->run();

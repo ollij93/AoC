@@ -42,6 +42,13 @@ cc_library(
     deps = [":common"],
 )
 
+cc_library(
+    name = "day7",
+    srcs = ["src/day7/day7.cpp"],
+    hdrs = ["src/day7/day7.hpp"],
+    deps = [":common"],
+)
+
 cc_binary(
     name = "aoc2023",
     srcs = ["src/main.cpp"],
@@ -51,6 +58,7 @@ cc_binary(
         ":day3",
         ":day4",
         ":day6",
+        ":day7",
     ],
 )
 
@@ -64,6 +72,7 @@ cc_test(
         "src/day3/day3.testinput",
         "src/day4/day4.testinput",
         "src/day6/day6.testinput",
+        "src/day7/day7.testinput",
     ],
     deps = [
         ":day1",
@@ -71,6 +80,7 @@ cc_test(
         ":day3",
         ":day4",
         ":day6",
+        ":day7",
         "@catch2//:catch2_main",
     ],
 )
