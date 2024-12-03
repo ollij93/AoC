@@ -34,8 +34,16 @@ class Config:
             data_file = data_dir / ("example.txt" if self.example else "real.txt")
             data = data_file.read_text()
             print(f"== {day.name} ==")
-            print("P1:", day.p1(data))
-            print("P2:", day.p2(data))
+            try:
+                p1 = day.p1(data)
+            except NotImplementedError:
+                p1 = "NotImplemented"
+            print("P1:", p1)
+            try:
+                p2 = day.p2(data)
+            except NotImplementedError:
+                p2 = "NotImplemented"
+            print("P2:", p2)
             print()
 
 
