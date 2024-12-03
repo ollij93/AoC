@@ -6,6 +6,7 @@ from typing import Any, Callable
 from . import (
     day1,
     day2,
+    day3,
     # Import new days solutions here...
 )
 
@@ -20,6 +21,7 @@ class Day:
 ALL_DAYS = [
     Day("day1", day1.p1, day1.p2),
     Day("day2", day2.p1, day2.p2),
+    Day("day3", day3.p1, day3.p2),
     # Register new days solutions here...
 ]
 
