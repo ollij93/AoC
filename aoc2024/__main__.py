@@ -15,13 +15,19 @@ from . import (
 class Day:
     name: str
     p1: Callable[[str], Any]
+    p1_answer: Any
     p2: Callable[[str], Any]
+    p2_answer: Any
+
+    @property
+    def data_dir(self) -> Path:
+        return Path(__file__).parent / "data" / self.name
 
 
 ALL_DAYS = [
-    Day("day1", day1.p1, day1.p2),
-    Day("day2", day2.p1, day2.p2),
-    Day("day3", day3.p1, day3.p2),
+    Day("day1", day1.p1, 11, day1.p2, 31),
+    Day("day2", day2.p1, 2, day2.p2, 4),
+    Day("day3", day3.p1, 161, day3.p2, 48),
     # Register new days solutions here...
 ]
 
@@ -32,8 +38,7 @@ class Config:
 
     def run(self) -> None:
         for day in ALL_DAYS:
-            data_dir = Path(__file__).parent / "data" / day.name
-            data_file = data_dir / ("example.txt" if self.example else "real.txt")
+            data_file = day.data_dir / ("example.txt" if self.example else "real.txt")
             data = data_file.read_text()
             print(f"== {day.name} ==")
             try:
@@ -49,5 +54,6 @@ class Config:
             print()
 
 
-cfg = cfgclasses.parse_args(Config, sys.argv[1:], "2024")
-cfg.run()
+if __name__ == '__main__':
+    cfg = cfgclasses.parse_args(Config, sys.argv[1:], "2024")
+    cfg.run()
