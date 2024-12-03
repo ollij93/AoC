@@ -3,7 +3,11 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable
-from . import day1
+from . import (
+    day1,
+    day2,
+    # Import new days solutions here...
+)
 
 
 @dataclass
@@ -13,7 +17,11 @@ class Day:
     p2: Callable[[str], Any]
 
 
-ALL_DAYS = [Day("day1", day1.p1, day1.p2)]
+ALL_DAYS = [
+    Day("day1", day1.p1, day1.p2),
+    Day("day2", day2.p1, day2.p2),
+    # Register new days solutions here...
+]
 
 
 @dataclass
