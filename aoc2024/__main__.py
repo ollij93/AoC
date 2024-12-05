@@ -8,6 +8,7 @@ from . import (
     day2,
     day3,
     day4,
+    day5,
     # Import new days solutions here...
 )
 
@@ -30,6 +31,7 @@ ALL_DAYS = [
     Day("day2", day2.p1, 2, day2.p2, 4),
     Day("day3", day3.p1, 161, day3.p2, 48),
     Day("day4", day4.p1, 18, day4.p2, 9),
+    Day("day5", day5.p1, 143, day5.p2, 123),
     # Register new days solutions here...
 ]
 
