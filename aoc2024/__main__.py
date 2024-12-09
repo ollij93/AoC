@@ -12,6 +12,7 @@ from . import (
     day6,
     day7,
     day8,
+    day9,
     # Import new days solutions here...
 )
 
@@ -38,6 +39,7 @@ ALL_DAYS = [
     Day("day6", day6.p1, 41, day6.p2, 6),
     Day("day7", day7.p1, 3749, day7.p2, 11387),
     Day("day8", day8.p1, 14, day8.p2, 34),
+    Day("day9", day9.p1, 1928, day9.p2, 2858),
     # Register new days solutions here...
 ]
 
@@ -45,25 +47,32 @@ ALL_DAYS = [
 @dataclass
 class Config:
     example: bool = cfgclasses.arg("Use the example data, not the real data.")
+    day: int = cfgclasses.arg("Specific day to run the process for", default=-1)
+
+    def run_day(self, day: Day) -> None:
+        data_file = day.data_dir / ("example.txt" if self.example else "real.txt")
+        data = data_file.read_text()
+        print(f"== {day.name} ==")
+        try:
+            p1 = day.p1(data)
+        except NotImplementedError:
+            p1 = "NotImplemented"
+        print("P1:", p1)
+        try:
+            p2 = day.p2(data)
+        except NotImplementedError:
+            p2 = "NotImplemented"
+        print("P2:", p2)
+        print()
 
     def run(self) -> None:
-        for day in ALL_DAYS:
-            data_file = day.data_dir / ("example.txt" if self.example else "real.txt")
-            data = data_file.read_text()
-            print(f"== {day.name} ==")
-            try:
-                p1 = day.p1(data)
-            except NotImplementedError:
-                p1 = "NotImplemented"
-            print("P1:", p1)
-            try:
-                p2 = day.p2(data)
-            except NotImplementedError:
-                p2 = "NotImplemented"
-            print("P2:", p2)
-            print()
+        if self.day == -1:
+            for day in ALL_DAYS:
+                self.run_day(day)
+        else:
+            self.run_day(ALL_DAYS[self.day - 1])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cfg = cfgclasses.parse_args(Config, sys.argv[1:], "2024")
     cfg.run()
