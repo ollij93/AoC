@@ -16,6 +16,7 @@ from . import (
     day10,
     day11,
     day12,
+    day13,
     # Import new days solutions here...
 )
 
@@ -46,6 +47,7 @@ ALL_DAYS = [
     Day("day10", day10.p1, 36, day10.p2, 81),
     Day("day11", day11.p1, 55312, day11.p2, 65601038650482),
     Day("day12", day12.p1, 1930, day12.p2, None),
+    Day("day13", day13.p1, 480, day13.p2, 875318608908),
     # Register new days solutions here...
 ]
 
