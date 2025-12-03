@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 )
@@ -36,9 +37,19 @@ func main() {
 	cwd, _ := os.Getwd()
 	datadir := filepath.Join(cwd, "data")
 
-	day1 := Day[int]{
+	if os.Getenv("DEBUG") == "1" {
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	}
+
+	day := Day[int]{
 		Num:      1,
 		Solution: &Day1Solution{},
 	}
-	day1.Run(datadir)
+	day.Run(datadir)
+
+	day = Day[int]{
+		Num:      2,
+		Solution: &Day2Solution{},
+	}
+	day.Run(datadir)
 }

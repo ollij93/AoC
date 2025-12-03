@@ -9,7 +9,7 @@ import (
 type Day1Solution struct{}
 
 func (*Day1Solution) Solve(inp string) (int, int) {
-	puzzle := parse(inp)
+	puzzle := parse1(inp)
 	return puzzle.solve()
 }
 
@@ -24,7 +24,7 @@ func (puzz *day1Puzzle) solve() (int, int) {
 	for i := range puzz.rots {
 		rot := puzz.rots[i]
 		new := curr + rot
-		slog.Debug("From", curr, "to", new, "via", rot)
+		slog.Debug("", "From", curr, "to", new, "via", rot)
 		if new < 0 {
 			// Went left enough to go past zero
 			// How many times? = 1 plus number of hundreds
@@ -34,15 +34,15 @@ func (puzz *day1Puzzle) solve() (int, int) {
 				n -= 1
 			}
 			retB += n
-			slog.Debug("  neg", n)
+			slog.Debug("  neg", "n", n)
 		} else if new >= 100 {
 			// Went right enough to go past zero
 			// How many times? = number of hundreds
 			n := (new / 100)
 			retB += n
-			slog.Debug("  pos", n)
+			slog.Debug("  pos", "n", n)
 		} else if new == 0 {
-			slog.Debug("  hit", 1)
+			slog.Debug("  hit", "n", 1)
 			retB += 1
 		}
 
@@ -60,7 +60,7 @@ func (puzz *day1Puzzle) solve() (int, int) {
 	return retA, retB
 }
 
-func parse(inp string) day1Puzzle {
+func parse1(inp string) day1Puzzle {
 	cleaninp := strings.TrimSpace(inp)
 	lines := strings.Split(cleaninp, "\n")
 
