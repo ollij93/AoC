@@ -64,4 +64,10 @@ func main() {
 		Solution: &Day4Solution{},
 	}
 	day.Run(datadir)
+
+	day = Day[int]{
+		Num:      5,
+		Solution: &Day5Solution{},
+	}
+	day.Run(datadir)
 }
