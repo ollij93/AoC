@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"sort"
 	"strconv"
@@ -41,47 +40,14 @@ type distList struct {
 	unsorted *distList // If not nil, this points to more (unsorted) entries which are known to have *smaller* values than this node
 }
 
-func (list *distList) show(puzz *day8Puzzle) {
-	fmt.Println("From", puzz.points[list.fromi], "to", puzz.points[list.toi], "->", list.dist)
-	nUnsorted := uint(0)
-	if list.unsorted != nil {
-		nUnsorted = list.unsorted.length()
-	}
-	fmt.Println("  unsorted*", nUnsorted)
-	if list.next != nil {
-		list.next.show(puzz)
-	}
-}
-
-func (list *distList) fullShowNums() {
-	fmt.Println("--- ", list.fromi, "=>", list.toi, "(", list.dist, ")")
-	for sub := list.unsorted; sub != nil; sub = sub.next {
-		fmt.Println(" | --", sub.fromi, "=>", sub.toi, "(", sub.dist, ")")
-	}
-	if list.next != nil {
-		list.next.fullShowNums()
-	}
-}
-
-func (list *distList) length() uint {
-	if list.next == nil {
-		return 1
-	} else {
-		return 1 + list.next.length()
-	}
-}
-
 // Get the next item numerically in the list, running the sorting process if needed
-func (list *distList) nextSorted(puzz *day8Puzzle) *distList {
+func (list *distList) nextSorted() *distList {
 	slog.Debug("Getting next sorted from", "curr", list.dist)
 	// We're only considering nodes "bigger" than the current, so ignore ourselves and unsorted.
 	if list.next == nil {
 		return nil
 	}
 	if list.next.unsorted != nil {
-		slog.Debug("Sorting")
-		//list.next.unsorted.fullShowNums()
-
 		newList := &distList{
 			list.next.dist,
 			list.next.fromi,
@@ -98,12 +64,8 @@ func (list *distList) nextSorted(puzz *day8Puzzle) *distList {
 			newList = newList.insert(node, true)
 			node = next
 		}
-		slog.Debug("Sorted into")
-		//newList.fullShowNums()
 		back.next = list.next.next
 		list.next = newList
-		slog.Debug("Done with sort step")
-		//list.next.fullShowNums()
 	}
 	// Next node now guaranteed to be sorted
 	return list.next
@@ -146,9 +108,7 @@ func (puzz *day8Puzzle) processStep(
 	liveGroupsCount int,
 ) (*distList, int, int) {
 	link := topList
-	topList = topList.nextSorted(puzz)
-	slog.Debug("New top of list")
-	//topList.fullShowNums()
+	topList = topList.nextSorted()
 	pointA := link.fromi
 	pointB := link.toi
 	groupA, okA := pointToGroup[pointA]
@@ -205,7 +165,7 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 	// Insert a really far away point at the end of the list so that its always
 	// put in as the "biggest" distance after we've done one pass of distances
 	// This avoids the tail end of the list getting prematurely sorted
-	puzz.points = append(puzz.points, point3d{999999, 999999, 999999})
+	//puzz.points = append(puzz.points, point3d{999999, 999999, 999999})
 
 	var topList *distList
 	for i1, p1 := range puzz.points {
@@ -218,13 +178,9 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 			} else {
 				topList = topList.insert(&newPoint, true)
 			}
-			//slog.Debug("Inserted new point")
-			//topList.fullShowNums()
 		}
 	}
 
-	fmt.Println("Done making initial. Now want", wanted)
-	//topList.fullShowNums()
 	// Create a map of pointId to "group id" and the reverse map of "group id" to pointId
 	// Then when we find A and B are connected we can merge their groups
 	// Use ints for groups to avoid typing confusion
@@ -250,12 +206,10 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 	// Continue processing until we only have one live group
 	var mostRecentLink *distList
 	// Sub 1 for special added point
-	for liveGroupsCount > 1 || len(pointToGroup) < (len(puzz.points)-1) {
+	for liveGroupsCount > 1 || len(pointToGroup) < len(puzz.points) {
 		mostRecentLink = topList
 		topList, groupsCount, liveGroupsCount = puzz.processStep(topList, pointToGroup, groupToPoints, groupsCount, liveGroupsCount)
 	}
-	fmt.Println("Most recent link is", puzz.points[mostRecentLink.fromi], "to", puzz.points[mostRecentLink.toi])
-	fmt.Println("Len of pointToGroup is", len(pointToGroup))
 	retB = uint(puzz.points[mostRecentLink.fromi].x * puzz.points[mostRecentLink.toi].x)
 	return
 }
