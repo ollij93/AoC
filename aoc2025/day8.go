@@ -78,30 +78,38 @@ func (list *distList) nextSorted(puzz *day8Puzzle) *distList {
 	if list.next == nil {
 		return nil
 	}
-	list.next.fullShowNums()
 	if list.next.unsorted != nil {
-		var newList *distList = &distList{
+		slog.Debug("Sorting")
+		//list.next.unsorted.fullShowNums()
+
+		newList := &distList{
 			list.next.dist,
 			list.next.fromi,
 			list.next.toi,
-			list.next,
+			nil,
 			nil,
 		}
+		back := newList
 		// The next node is unsorted. Sort it by re-inserting all the nodes to form a new "list".
 		for node := list.next.unsorted; node != nil; {
 			next := node.next
+			node.next = nil
+			node.unsorted = nil
 			newList = newList.insert(node, true)
 			node = next
 		}
+		slog.Debug("Sorted into")
+		//newList.fullShowNums()
+		back.next = list.next.next
 		list.next = newList
+		slog.Debug("Done with sort step")
+		//list.next.fullShowNums()
 	}
 	// Next node now guaranteed to be sorted
-	slog.Debug("Can pop next")
-	list.next.fullShowNums()
 	return list.next
 }
 
-func (list *distList) insert(point *distList, sort bool) (ret *distList) {
+func (list *distList) insert(point *distList, sort bool) *distList {
 	// Returns the pointer to the new head of the list
 	slog.Debug("Inserting new", "from", point.fromi, "to", point.toi, "dist", point.dist)
 	slog.Debug("  prev", "from", list.fromi, "to", list.toi, "dist", list.dist)
@@ -111,31 +119,29 @@ func (list *distList) insert(point *distList, sort bool) (ret *distList) {
 		if sort {
 			slog.Debug("Inserted as new head")
 			point.next = list
-			ret = point
+			return point
 		} else {
 			slog.Debug("Inserted into unsorted")
 			point.next = list.unsorted
 			list.unsorted = point
-			ret = list
+			return list
 		}
 	} else if list.dist == point.dist {
 		list.next = nil
 		fmt.Println("Inserting with equal for", point.fromi, "->", point.toi, "and", list.fromi, "->", list.toi)
 		// Intentionally crash
 		fmt.Println(list.next.next)
-		ret = list
+		return list
 	} else if list.next == nil {
 		slog.Debug("Inserted at end (new biggest)")
 		list.next = point
 		point.next = nil
-		ret = list
+		return list
 	} else {
 		slog.Debug("Inserting further into list")
 		list.next = list.next.insert(point, false) // Don't sort deeper than we need to go now
-		ret = list
+		return list
 	}
-	ret.fullShowNums()
-	return ret
 }
 
 func (puzz *day8Puzzle) solve() (retA, retB uint) {
@@ -161,11 +167,13 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 			} else {
 				topList = topList.insert(&newPoint, true)
 			}
+			//slog.Debug("Inserted new point")
+			//topList.fullShowNums()
 		}
 	}
 
 	fmt.Println("Done making initial. Now want", wanted)
-	topList.fullShowNums()
+	//topList.fullShowNums()
 	// Create a map of pointId to "group id" and the reverse map of "group id" to pointId
 	// Then when we find A and B are connected we can merge their groups
 	// Use ints for groups to avoid typing confusion
@@ -177,6 +185,8 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 		fmt.Println("Link from", link.fromi, puzz.points[link.fromi], "to", link.toi, puzz.points[link.toi])
 		link.show(puzz)
 		topList = topList.nextSorted(puzz)
+		slog.Debug("New top of list")
+		//topList.fullShowNums()
 		pointA := link.fromi
 		pointB := link.toi
 		groupA, okA := pointToGroup[pointA]
