@@ -126,12 +126,6 @@ func (list *distList) insert(point *distList, sort bool) *distList {
 			list.unsorted = point
 			return list
 		}
-	} else if list.dist == point.dist {
-		list.next = nil
-		fmt.Println("Inserting with equal for", point.fromi, "->", point.toi, "and", list.fromi, "->", list.toi)
-		// Intentionally crash
-		fmt.Println(list.next.next)
-		return list
 	} else if list.next == nil {
 		slog.Debug("Inserted at end (new biggest)")
 		list.next = point
@@ -142,6 +136,63 @@ func (list *distList) insert(point *distList, sort bool) *distList {
 		list.next = list.next.insert(point, false) // Don't sort deeper than we need to go now
 		return list
 	}
+}
+
+func (puzz *day8Puzzle) processStep(
+	topList *distList,
+	pointToGroup map[uint]int,
+	groupToPoints map[int]map[uint]struct{},
+	groupsCount int,
+	liveGroupsCount int,
+) (*distList, int, int) {
+	link := topList
+	topList = topList.nextSorted(puzz)
+	slog.Debug("New top of list")
+	//topList.fullShowNums()
+	pointA := link.fromi
+	pointB := link.toi
+	groupA, okA := pointToGroup[pointA]
+	groupB, okB := pointToGroup[pointB]
+	if okA {
+		if okB {
+			// Both points already in groups
+			if groupA == groupB {
+				// Both points already in the same group
+			} else {
+				// Both points in different groups - merge
+				allBPoints := groupToPoints[groupB]
+				// Reassign all points from B to A
+				for point := range allBPoints {
+					groupToPoints[groupA][point] = struct{}{}
+					pointToGroup[point] = groupA
+				}
+				// Empty the groupB map
+				groupToPoints[groupB] = make(map[uint]struct{})
+				liveGroupsCount -= 1
+			}
+		} else {
+			// A in a group, B not, so put B in groupA
+			pointToGroup[pointB] = groupA
+			groupToPoints[groupA][pointB] = struct{}{}
+		}
+	} else {
+		if okB {
+			// B in a group, A not, so put A in groupB
+			pointToGroup[pointA] = groupB
+			groupToPoints[groupB][pointA] = struct{}{}
+		} else {
+			// Neither in a group, so make a new group and add both
+			newGroup := groupsCount
+			pointToGroup[pointA] = newGroup
+			pointToGroup[pointB] = newGroup
+			groupToPoints[newGroup] = make(map[uint]struct{})
+			groupToPoints[newGroup][pointA] = struct{}{}
+			groupToPoints[newGroup][pointB] = struct{}{}
+			groupsCount += 1
+			liveGroupsCount += 1
+		}
+	}
+	return topList, groupsCount, liveGroupsCount
 }
 
 func (puzz *day8Puzzle) solve() (retA, retB uint) {
@@ -180,61 +231,9 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 	groupsCount := 0
 	pointToGroup := make(map[uint]int)
 	groupToPoints := make(map[int]map[uint]struct{})
+	liveGroupsCount := 0
 	for range wanted {
-		link := topList
-		fmt.Println("Link from", link.fromi, puzz.points[link.fromi], "to", link.toi, puzz.points[link.toi])
-		link.show(puzz)
-		topList = topList.nextSorted(puzz)
-		slog.Debug("New top of list")
-		//topList.fullShowNums()
-		pointA := link.fromi
-		pointB := link.toi
-		groupA, okA := pointToGroup[pointA]
-		groupB, okB := pointToGroup[pointB]
-		if okA {
-			if okB {
-				// Both points already in groups
-				if groupA == groupB {
-					// Both points already in the same group
-					fmt.Println("=== Same groups, skipping ===")
-					continue
-				} else {
-					// Both points in different groups - merge
-					allBPoints := groupToPoints[groupB]
-					// Reassign all points from B to A
-					for point := range allBPoints {
-						groupToPoints[groupA][point] = struct{}{}
-						pointToGroup[point] = groupA
-					}
-					// Empty the groupB map
-					groupToPoints[groupB] = make(map[uint]struct{})
-				}
-			} else {
-				// A in a group, B not, so put B in groupA
-				pointToGroup[pointB] = groupA
-				groupToPoints[groupA][pointB] = struct{}{}
-			}
-		} else {
-			if okB {
-				// B in a group, A not, so put A in groupB
-				pointToGroup[pointA] = groupB
-				groupToPoints[groupB][pointA] = struct{}{}
-			} else {
-				// Neither in a group, so make a new group and add both
-				newGroup := groupsCount
-				pointToGroup[pointA] = newGroup
-				pointToGroup[pointB] = newGroup
-				groupToPoints[newGroup] = make(map[uint]struct{})
-				groupToPoints[newGroup][pointA] = struct{}{}
-				groupToPoints[newGroup][pointB] = struct{}{}
-				groupsCount += 1
-			}
-		}
-		fmt.Println("=== Groups ===")
-		for groupId := range groupToPoints {
-			fmt.Println("Group", groupId)
-			fmt.Println(groupToPoints[groupId])
-		}
+		topList, groupsCount, liveGroupsCount = puzz.processStep(topList, pointToGroup, groupToPoints, groupsCount, liveGroupsCount)
 	}
 	// Get the length of all the groups and sort
 	lens := make([]int, len(groupToPoints))
@@ -242,12 +241,22 @@ func (puzz *day8Puzzle) solve() (retA, retB uint) {
 		lens[groupId] = len(groupToPoints[groupId])
 	}
 	sort.Ints(lens)
-	fmt.Println("Lengths", lens)
 	// Take the longest three
 	a := lens[len(lens)-1]
 	b := lens[len(lens)-2]
 	c := lens[len(lens)-3]
 	retA = uint(a * b * c)
+
+	// Continue processing until we only have one live group
+	var mostRecentLink *distList
+	// Sub 1 for special added point
+	for liveGroupsCount > 1 || len(pointToGroup) < (len(puzz.points)-1) {
+		mostRecentLink = topList
+		topList, groupsCount, liveGroupsCount = puzz.processStep(topList, pointToGroup, groupToPoints, groupsCount, liveGroupsCount)
+	}
+	fmt.Println("Most recent link is", puzz.points[mostRecentLink.fromi], "to", puzz.points[mostRecentLink.toi])
+	fmt.Println("Len of pointToGroup is", len(pointToGroup))
+	retB = uint(puzz.points[mostRecentLink.fromi].x * puzz.points[mostRecentLink.toi].x)
 	return
 }
 
