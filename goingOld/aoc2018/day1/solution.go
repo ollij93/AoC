@@ -1,13 +1,14 @@
 package day1
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 )
 
 type Solution struct{}
 
-func (*Solution) Solve(inp string) (uint, uint) {
+func (*Solution) Solve(inp string) (string, string) {
 	puzzle := parse(inp)
 	return puzzle.solve()
 }
@@ -16,24 +17,24 @@ type puzzle struct {
 	nums []int
 }
 
-func (puzz *puzzle) solve() (retA, retB uint) {
+func (puzz *puzzle) solve() (retA, retB string) {
 	freq := 0
 	freqs := make(map[int]struct{})
-	for retB == 0 {
+	for retB == "" {
 		for _, num := range puzz.nums {
 			freq += num
 			_, exists := freqs[freq]
 			if exists {
-				if retB == 0 {
-					retB = uint(freq)
+				if retB == "" {
+					retB = fmt.Sprint(freq)
 				}
 			} else {
 				freqs[freq] = struct{}{}
 			}
 		}
 
-		if retA == 0 {
-			retA = uint(freq)
+		if retA == "" {
+			retA = fmt.Sprint(freq)
 		}
 	}
 	return

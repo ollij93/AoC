@@ -2,7 +2,7 @@ package template
 
 type Solution struct{}
 
-func (*Solution) Solve(inp string) (uint, uint) {
+func (*Solution) Solve(inp string) (string, string) {
 	puzzle := parse(inp)
 	return puzzle.solve()
 }
@@ -10,7 +10,7 @@ func (*Solution) Solve(inp string) (uint, uint) {
 type puzzle struct {
 }
 
-func (puzz *puzzle) solve() (retA, retB uint) {
+func (puzz *puzzle) solve() (retA, retB string) {
 	return
 }
 

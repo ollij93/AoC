@@ -3,12 +3,13 @@ package aoc2018
 import (
 	"fmt"
 	"goingOld/aoc2018/day1"
+	"goingOld/aoc2018/day2"
 	"os"
 	"path/filepath"
 )
 
 type Solution interface {
-	Solve(string) (uint, uint)
+	Solve(string) (string, string)
 }
 
 type Day struct {
@@ -37,6 +38,7 @@ func Run() {
 
 	days := []Day{
 		{1, &day1.Solution{}},
+		{2, &day2.Solution{}},
 	}
 
 	for _, day := range days {
