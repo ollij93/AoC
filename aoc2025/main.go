@@ -88,4 +88,10 @@ func main() {
 		Solution: &Day8Solution{},
 	}
 	dayu.Run(datadir)
+
+	dayu = Day[uint]{
+		Num:      9,
+		Solution: &Day9Solution{},
+	}
+	dayu.Run(datadir)
 }
