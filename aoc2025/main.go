@@ -94,4 +94,10 @@ func main() {
 		Solution: &Day9Solution{},
 	}
 	dayu.Run(datadir)
+
+	dayu = Day[uint]{
+		Num:      10,
+		Solution: &Day10Solution{},
+	}
+	dayu.Run(datadir)
 }
