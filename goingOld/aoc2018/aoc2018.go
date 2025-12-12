@@ -5,6 +5,7 @@ import (
 	"goingOld/aoc2018/day1"
 	"goingOld/aoc2018/day2"
 	"goingOld/aoc2018/day3"
+	"goingOld/aoc2018/day4"
 	"os"
 	"path/filepath"
 )
@@ -41,6 +42,7 @@ func Run() {
 		{1, &day1.Solution{}},
 		{2, &day2.Solution{}},
 		{3, &day3.Solution{}},
+		{4, &day4.Solution{}},
 	}
 
 	for _, day := range days {
