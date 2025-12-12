@@ -15,21 +15,6 @@ type day11Puzzle struct {
 	links map[string]map[string]struct{}
 }
 
-//func (puzz *day11Puzzle) invert() map[string]map[string]struct{} {
-//	ret := make(map[string]map[string]struct{})
-//	for oldkey := range puzz.links {
-//		for newkey := range puzz.links[oldkey] {
-//			link, exists := ret[newkey]
-//			if !exists {
-//				link = make(map[string]struct{})
-//				ret[newkey] = link
-//			}
-//			link[oldkey] = struct{}{}
-//		}
-//	}
-//	return ret
-//}
-
 func (puzz *day11Puzzle) trackPaths(from string, to string, ch chan uint) {
 	// Sends a count of paths to the channel each time "to" is reached
 	// Map of points to count of ways to get there
